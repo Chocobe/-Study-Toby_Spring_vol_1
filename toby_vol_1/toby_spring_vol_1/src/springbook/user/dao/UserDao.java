@@ -8,15 +8,10 @@ import java.sql.SQLException;
 
 import springbook.user.domain.User;
 
-public class UserDao {
+public abstract class UserDao {
 // add
 	public void add(User user) throws ClassNotFoundException, SQLException {
-		String url = "jdbc:mysql://localhost/tobySpring";
-		String userName = "root";
-		String password = "1111";
-		
-		Class.forName("com.mysql.jdbc.Driver");
-		Connection c = DriverManager.getConnection(url, userName, password);
+		Connection c = getConnection();
 		
 		PreparedStatement ps = c.prepareStatement("INSERT INTO users(id, name, password) VALUES(?, ?, ?)");
 		ps.setString(1, user.getId());
@@ -32,12 +27,7 @@ public class UserDao {
 	
 // get
 	public User get(String id) throws ClassNotFoundException, SQLException {
-		String url = "jdbc:mysql://localhost/tobySpring";
-		String userName = "root";
-		String password = "1111";
-		
-		Class.forName("com.mysql.jdbc.Driver");
-		Connection c = DriverManager.getConnection(url, userName, password);
+		Connection c = getConnection();
 		
 		PreparedStatement ps = c.prepareStatement("SELECT * FROM users WHERE id=?");
 		ps.setString(1, id);
@@ -58,23 +48,26 @@ public class UserDao {
 	}
 	
 	
+	abstract public Connection getConnection() throws ClassNotFoundException, SQLException;
+	
+	
 // Console TEST
-	public static void main(String[] args) throws ClassNotFoundException, SQLException {
-		UserDao dao = new UserDao();
-		
-		User user = new User();
-		user.setId("chocobe");
-		user.setName("김영우");
-		user.setPassword("내 비번");
-		
-		dao.add(user);
-		
-		System.out.println(user.getId() + " 등록 성공!");
-		
-		User user2 = dao.get(user.getId());
-		System.out.println(user2.getName());
-		System.out.println(user2.getPassword());
-		
-		System.out.println(user2.getId() + "조회 성공!!");
-	}
+//	public static void main(String[] args) throws ClassNotFoundException, SQLException {
+//		UserDao dao = new UserDao();
+//		
+//		User user = new User();
+//		user.setId("chocobe_3");
+//		user.setName("김영우");
+//		user.setPassword("내 비번");
+//		
+//		dao.add(user);
+//		
+//		System.out.println(user.getId() + " 등록 성공!");
+//		
+//		User user2 = dao.get(user.getId());
+//		System.out.println(user2.getName());
+//		System.out.println(user2.getPassword());
+//		
+//		System.out.println(user2.getId() + " 조회 성공!!");
+//	}
 }
