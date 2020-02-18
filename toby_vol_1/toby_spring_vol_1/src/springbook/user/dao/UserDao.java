@@ -1,17 +1,23 @@
 package springbook.user.dao;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import springbook.user.domain.User;
 
-public abstract class UserDao {
+public class UserDao {
+	private ConnectionMaker connectionMaker;
+	
+	public UserDao(ConnectionMaker connectionMaker) {
+		this.connectionMaker = connectionMaker;
+	}
+	
+	
 // add
 	public void add(User user) throws ClassNotFoundException, SQLException {
-		Connection c = getConnection();
+		Connection c = connectionMaker.makeConnection();
 		
 		PreparedStatement ps = c.prepareStatement("INSERT INTO users(id, name, password) VALUES(?, ?, ?)");
 		ps.setString(1, user.getId());
@@ -27,7 +33,7 @@ public abstract class UserDao {
 	
 // get
 	public User get(String id) throws ClassNotFoundException, SQLException {
-		Connection c = getConnection();
+		Connection c = connectionMaker.makeConnection();
 		
 		PreparedStatement ps = c.prepareStatement("SELECT * FROM users WHERE id=?");
 		ps.setString(1, id);
@@ -46,28 +52,4 @@ public abstract class UserDao {
 		
 		return user;
 	}
-	
-	
-	abstract public Connection getConnection() throws ClassNotFoundException, SQLException;
-	
-	
-// Console TEST
-//	public static void main(String[] args) throws ClassNotFoundException, SQLException {
-//		UserDao dao = new UserDao();
-//		
-//		User user = new User();
-//		user.setId("chocobe_3");
-//		user.setName("김영우");
-//		user.setPassword("내 비번");
-//		
-//		dao.add(user);
-//		
-//		System.out.println(user.getId() + " 등록 성공!");
-//		
-//		User user2 = dao.get(user.getId());
-//		System.out.println(user2.getName());
-//		System.out.println(user2.getPassword());
-//		
-//		System.out.println(user2.getId() + " 조회 성공!!");
-//	}
 }
