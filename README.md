@@ -271,3 +271,54 @@
 * 일반 메서드를 이용하는 방법
 
 * 스프링은 그 외에도 다양한 방법들을 지원한다.
+
+
+
+
+## 🐫 XML을 이용한 설정
+
+* 오브젝트(객체) 사이의 의존정보 때문에 자바코드를 만드는 것은 작성도 컴파일도 번거롭다.
+
+    때문에 **XML**을 이용하여 만들면 사용, 작성, 검토 등 좀 더 편하다.
+
+### XML 작성방법
+
+* ``@Bean`` ➡ ``<bean id="" class=""/>``
+
+    * ``id`` : 빈 이름
+
+    * ``class`` : 빈으로 사용할 클래스의 이름(패키지 경로 포함)
+
+
+* 작성한 XML파일은 **클래스 패스 최상단**에 저장하면 사용하기 편리하다. (src폴더 안)
+
+
+* Bean으로 만들 객체에 수정자(setter)가 있다면, DI를 넣어줄 수 있다.
+
+    ```xml
+    <beans 스키마 정보>
+        <bean id="빈이름_1" class="springbook.user.vo.UserVO"/>
+    
+        <bean id="빈이름_2" class="springbook.user.dao.UserDao">
+            <property name="connectionMaker" ref="빈이름_1"/>
+        </bean>
+    </beans>
+    ```
+
+    위의 XML설정 정보에는 *빈이름_2* 객체에 **빈이름_1** 객체를 DI 넣어준 것이다.
+
+    즉, **<property>** 에는 DI를 위해 참조할 **Bean**의 **id**값을 지정하면 된다.
+
+
+### XML을 이용하는 애플리케이션 컨텍스트 만들기 (직접 사용하기)
+
+*   ``ApplicationContext context = new AnnotationConfigApplicationContext(팩토리 클래스);``
+
+    위의 코드에서 ``new GenericXmlApplicationContext(xml경로)``로 객체를 생성하면 해당 XML을 이용한 ApplicationContext가 생성된다.
+
+    ``ApplicationContext context = new GenericXmlApplicationContext(xml경로)``
+
+
+* 참고 : ``ClassPathXmlApplicationContext("xml파일명.xml", 같은 패키지에 있는 클래스.class)``를 이용해도 XMl을 읽어올 수 있다.
+
+    (일반적으로는 ``GenericXmlApplicationContext()``를 사용하면 무난하다)

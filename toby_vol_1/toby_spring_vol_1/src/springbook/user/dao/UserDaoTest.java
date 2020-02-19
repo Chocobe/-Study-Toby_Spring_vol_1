@@ -4,12 +4,13 @@ import java.sql.SQLException;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.support.GenericXmlApplicationContext;
 
 import springbook.user.domain.User;
 
 public class UserDaoTest {
 	public static void main(String[] args) throws ClassNotFoundException, SQLException {
-		testIoC();
+		testSelectByXML();
 	}
 	
 	
@@ -54,5 +55,34 @@ public class UserDaoTest {
 		
 		System.out.println("ApplicationContext.getBean() 첫번째 : " + dao_1);
 		System.out.println("ApplicationContext.getBean() 두번째 : " + dao_2);
+	}
+	
+	
+// 3. xml을 이용한 applicationContext설정 테스트
+	public static void testInsertByXML() throws ClassNotFoundException, SQLException {
+		ApplicationContext context = new GenericXmlApplicationContext("applicationContext.xml");
+		UserDao userDao = context.getBean("userDao", UserDao.class);
+		
+		User user = new User();
+		user.setId("XML - ID");
+		user.setName("XML - Name");
+		user.setPassword("XML - Password");
+		
+		userDao.add(user);
+		
+		System.out.println("XML - INSERT완료");
+	}
+	
+	public static void testSelectByXML() throws ClassNotFoundException, SQLException {
+		ApplicationContext context = new GenericXmlApplicationContext("applicationContext.xml");
+		UserDao userDao = context.getBean("userDao", UserDao.class);
+		
+		User user = userDao.get("XML - ID");
+		
+		if(user != null) {
+			System.out.println("ID : " + user.getId());
+			System.out.println("Password : " + user.getPassword());
+			System.out.println("Name : " + user.getName());
+		}
 	}
 }
