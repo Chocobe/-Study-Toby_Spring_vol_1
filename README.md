@@ -2,10 +2,14 @@
 
 # 1장. 오브젝트와 의존관계
 
+
+
+
 ## 🐫 리펙토링 하기
 
 > 관심사항 분리하기
 	
+
 ### 1. 중복코드의 메서드 추출
             
     다른 관심사와 분리하여, 변경에 대한 영향력을 줄일 수 있다.
@@ -32,9 +36,12 @@
     즉, 전략을 바꿔가며 사용한다는 의미 (해당 전략은 생성자의 인자로 지정해 주는게 일반적)
 
 
+
+
 ## 🐫 원칙과 패턴
 
 > 유연한 설계를 위한 원칙과 패턴
+
 
 ### 1. 단일 책임 원칙
 
@@ -71,6 +78,8 @@
     의존관계를 맺을 때, 변하기 쉬운 것 보다 "변하기 어려운 것에 의존하라"는 원칙이다. 
 
 
+
+
 ## 🐫 제어의 역전(IoC)
 
     제어권을 상위 템플릿 메서드에 넘기고, 
@@ -80,6 +89,7 @@
     "템플릿 메서드 패턴"의 훅(hook)메서드가 제어의 역전을 활요한 예 이다.
 
     제어의 역전이 적용된 클래스를 "스프링빈" 또는 "빈" 이라고 한다.
+
 
 * "빈"을 생성하는 클래스를 **빈팩토리** 또는 **애플리케이션 컨텍스트** 라고 한다.
 
@@ -91,13 +101,30 @@
 
         * **애플리케이션 컨텍스트** 라고 부를 때 : "설정파일" 역할에 초점을 둔 명칭
 
-* **빈팩토리** 또는 **애플리케이션 컨텍스트** 만들기
 
-    1. org.springframework.context-3.0.7.RELEASE.jar 라이브러리 추가
+* 필요한 스프링 라이브러리
+
+    1. com.springsource.net.sf.cglib-2.2.0.jar
+
+    1. com.springsource.org.apache.commons.logging-1.1.1.jar
+
+    1. org.springframework.asm-3.0.7.RELEASE.jar
+
+    1. org.springframework.beans-3.0.7.RELEASE.jar
+
+    1. org.springframework.context-3.0.7.RELEASE.jar
+
+    1. org.springframework.core-3.0.7.RELEASE.jar
+
+    1. org.springframework.expression-3.0.7.RELEASE.jar
+
+
+* **빈팩토리** 또는 **애플리케이션 컨텍스트** 만들기
 
     1. (import org.springframework.context.annotation.Configuration) - 클래스에 **@Configuration** 지정
 
     1. (import org.springframework.context.annotation.Bean;) - **빈**을 생성하는 **메서드**에 **@Bean** 지정
+
 
 * **빈팩토리** 또는 **애플리케이션 컨텍스트** 사용하기
     
