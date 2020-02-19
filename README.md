@@ -329,6 +329,8 @@
 
     ``ApplicationContext context = new GenericXmlApplicationContext(xml경로)``
 
+    **경로값**은 **클래스패스(src)** 부터 **/**로 구분된 경로값이 필요하다.
+
 
 * 참고 : ``ClassPathXmlApplicationContext("xml파일명.xml", 같은 패키지에 있는 클래스.class)``를 이용해도 XMl을 읽어올 수 있다.
 
