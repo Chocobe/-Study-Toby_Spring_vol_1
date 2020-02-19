@@ -9,9 +9,7 @@ import springbook.user.domain.User;
 
 public class UserDaoTest {
 	public static void main(String[] args) throws ClassNotFoundException, SQLException {
-		testEqualsByDaoFactory();
-		
-		testEqualsByApplicationContext();
+		testIoC();
 	}
 	
 	
@@ -21,7 +19,7 @@ public class UserDaoTest {
 		UserDao dao = context.getBean("userDao", UserDao.class);
 		
 		User user = new User();
-		user.setId("Im_Spring");
+		user.setId("Im_Sp_2");
 		user.setName("내이름은 스프링");
 		user.setPassword("스프링 비번");
 		

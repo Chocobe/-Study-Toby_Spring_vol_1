@@ -2,7 +2,8 @@ package springbook.user.dao;
 
 public class DUserDao extends UserDao {
 	public DUserDao(ConnectionMaker connectionMaker) {
-		super(connectionMaker);
+//		super(connectionMaker);
+		super.setConnectionMaker(connectionMaker);
 	}
 	
 //	public static void main(String[] args) throws ClassNotFoundException, SQLException {
