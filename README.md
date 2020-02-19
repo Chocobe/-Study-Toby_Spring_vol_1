@@ -357,7 +357,7 @@
 
 ### SimpleDriverDataSource 객체 생성하기
 
-    ```java
+```java
     public DataSource getDataSource() {
         SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
         dataSource.setDriverClass(com.mysql.jdbc.Driver);
@@ -365,21 +365,21 @@
         dataSource.setUsername("root");
         dataSource.setPassword("1111");
     }    
-    ```
+```
 
 
 ### XML로 SimpleDriverDataSource 설정하기
 
-    ```xml
-    <beans>
-        <bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
-            <property name="driverClass" value="com.mysql.jdbc.Driver"/>
-            <property name="url" value="jdbc:mysql://localhost/tobySpring"/>
-            <property name="username" value="root"/>
-            <property name="password" value="1111"/>
-        </bean>
-    </beans>
-    ```
+```xml
+<beans>
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
+        <property name="driverClass" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost/tobySpring"/>
+        <property name="username" value="root"/>
+        <property name="password" value="1111"/>
+    </bean>
+</beans>
+```
 
 * SimpleDriverDataSource 객체의 **driverClass**의 인자값은 원래 **Class** 타입이지만,
 
