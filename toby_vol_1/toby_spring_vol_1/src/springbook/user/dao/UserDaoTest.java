@@ -1,5 +1,7 @@
 package springbook.user.dao;
 
+import static java.lang.System.out;
+
 import java.sql.SQLException;
 
 import org.springframework.context.ApplicationContext;
@@ -9,8 +11,15 @@ import org.springframework.context.support.GenericXmlApplicationContext;
 import springbook.user.domain.User;
 
 public class UserDaoTest {
-	public static void main(String[] args) throws ClassNotFoundException, SQLException {
-		testSelectByXML();
+	public static void main(String[] args) throws SQLException {
+		ApplicationContext context = new GenericXmlApplicationContext("applicationContext.xml");
+		UserDao dao = context.getBean("userDao", UserDao.class);
+		
+		User user = dao.get("XML - ID");
+		
+		out.println("ID : " + user.getId());
+		out.println("Name : " + user.getName());
+		out.println("Password : " + user.getPassword());
 	}
 	
 	
@@ -83,6 +92,24 @@ public class UserDaoTest {
 			System.out.println("ID : " + user.getId());
 			System.out.println("Password : " + user.getPassword());
 			System.out.println("Name : " + user.getName());
+		}
+	}
+	
+	
+// 4. DataSource를 이용한 DB 연결
+	public static void testSelectByDataSource() throws SQLException {
+		ApplicationContext context = new AnnotationConfigApplicationContext(DaoFactory.class);
+		UserDao dao = context.getBean("userDao", UserDao.class);
+		
+		User user = dao.get("XML - ID");
+		
+		if(user != null) {
+			out.println("ID : " + user.getId());
+			out.println("Name : " + user.getName());
+			out.println("Password : " + user.getPassword());
+			
+		} else {
+			out.println("조회된 데이터가 없습니다.");
 		}
 	}
 }

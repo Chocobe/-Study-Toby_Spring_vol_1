@@ -1,28 +1,27 @@
 package springbook.user.dao;
 
 import java.sql.Connection;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import javax.sql.DataSource;
+
 import springbook.user.domain.User;
 
 public class UserDao {
-	private ConnectionMaker connectionMaker;
-	
-//	public UserDao(ConnectionMaker connectionMaker) {
-//		this.connectionMaker = connectionMaker;
-//	}
+	private DataSource dataSource;
 	
 	
-	public void setConnectionMaker(ConnectionMaker connectionMaker) {
-		this.connectionMaker = connectionMaker;
+	public void setDataSource(DataSource dataSource) {
+		this.dataSource = dataSource;
 	}
 	
 	
 // add
-	public void add(User user) throws ClassNotFoundException, SQLException {
-		Connection c = connectionMaker.makeConnection();
+	public void add(User user) throws SQLException {
+		Connection c = dataSource.getConnection();
 		
 		PreparedStatement ps = c.prepareStatement("INSERT INTO users(id, name, password) VALUES(?, ?, ?)");
 		ps.setString(1, user.getId());
@@ -37,8 +36,8 @@ public class UserDao {
 	
 	
 // get
-	public User get(String id) throws ClassNotFoundException, SQLException {
-		Connection c = connectionMaker.makeConnection();
+	public User get(String id) throws SQLException {
+		Connection c = dataSource.getConnection();
 		
 		PreparedStatement ps = c.prepareStatement("SELECT * FROM users WHERE id=?");
 		ps.setString(1, id);

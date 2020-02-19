@@ -335,3 +335,57 @@
 * 참고 : ``ClassPathXmlApplicationContext("xml파일명.xml", 같은 패키지에 있는 클래스.class)``를 이용해도 XMl을 읽어올 수 있다.
 
     (일반적으로는 ``GenericXmlApplicationContext()``를 사용하면 무난하다)
+
+
+---
+
+
+## 🐫 DataSource 인터페이스로 DB 연결해 보기
+
+* 스프링에서 제공하는 DataSource타입을 이용하여 DB연결하기
+
+* 라이브러리 : ``org.springframework.jdbc-3.0.7.RELEASE.jar``
+
+* ``SimpleDriverDataSource`` 클래스는 ``DataSource`` 인터페이스를 구현한 클래스다.
+
+* ``SimpleDriverDataSource`` 객체를 생성하여, 기존의 DataSource와 동일하게 사용할 수 있다.
+
+* ``driverClass``, ``url``, ``username``, ``password``는 각각의 수정자(setter)로 설정할 수 있다.
+
+    ``driverClass``의 인자값은 String이 아니라, ``Class``타입임을 기억하자.
+
+
+### SimpleDriverDataSource 객체 생성하기
+
+    ```java
+    public DataSource getDataSource() {
+        SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
+        dataSource.setDriverClass(com.mysql.jdbc.Driver);
+        dataSource.setUrl("jdbc:mysql://localhost/tobySpring");
+        dataSource.setUsername("root");
+        dataSource.setPassword("1111");
+    }    
+    ```
+
+
+### XML로 SimpleDriverDataSource 설정하기
+
+    ```xml
+    <beans>
+        <bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
+            <property name="driverClass" value="com.mysql.jdbc.Driver"/>
+            <property name="url" value="jdbc:mysql://localhost/tobySpring"/>
+            <property name="username" value="root"/>
+            <property name="password" value="1111"/>
+        </bean>
+    </beans>
+    ```
+
+* SimpleDriverDataSource 객체의 **driverClass**의 인자값은 원래 **Class** 타입이지만,
+
+XML의 ``<property>``를 이용하여 인자값을 넣을때는 **String** 타입으로 대입한다.
+
+이는, 스프링이 XML을 읽어올 때, 파타메터의 타입에 연된되는 타입으로 **자동변환** 해주기 때문이다.
+
+
+* 즉, XML로 ``property``를 작성할 때는 파라메터의 타입에 상관없이, **String타입**으로 작성하면 된다.
