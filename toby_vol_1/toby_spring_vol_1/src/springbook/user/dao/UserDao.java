@@ -8,6 +8,8 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
+import org.springframework.dao.EmptyResultDataAccessException;
+
 import springbook.user.domain.User;
 
 public class UserDao {
@@ -44,18 +46,54 @@ public class UserDao {
 		
 		ResultSet rs = ps.executeQuery();
 		
-		User user = new User();
+		User user = null;
 		
 		if(rs.next()) {
-			user.setId(rs.getString("id"));
-			user.setName(rs.getString("name"));
-			user.setPassword(rs.getString("password"));
+			user = new User(rs.getString("id"),
+							rs.getString("name"),
+							rs.getString("password"));
 		}
 		
 		rs.close();
 		ps.close();
 		c.close();
 		
+		if(user == null) throw new EmptyResultDataAccessException(1);
+		
 		return user;
+	}
+	
+	
+// DELETE ALL
+	public void deleteAll() throws SQLException {
+		String sql = "DELETE FROM users";
+		
+		Connection conn = dataSource.getConnection();
+		PreparedStatement pstmt = conn.prepareStatement(sql);
+		
+		pstmt.executeUpdate();
+		
+		pstmt.close();
+		conn.close();
+	}
+	
+	
+// COUNT(*)
+	public int getCount() throws SQLException {
+		String sql = "SELECT COUNT(*) FROM users";
+		
+		Connection conn = dataSource.getConnection();
+		PreparedStatement pstmt = conn.prepareStatement(sql);
+		
+		ResultSet rset = pstmt.executeQuery();
+		rset.next();
+		
+		int count = rset.getInt(1);
+		
+		rset.close();
+		pstmt.close();
+		conn.close();
+		
+		return count;
 	}
 }

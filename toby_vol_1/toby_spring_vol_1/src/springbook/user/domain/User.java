@@ -6,6 +6,18 @@ public class User {
 	private String password;
 	
 	
+// 생성자
+	public User() { }
+	
+	public User(String id,
+				String name,
+				String password) {
+		this.id = id;
+		this.name = name;
+		this.password = password;
+	}
+	
+	
 // id
 	public void setId(String id) {
 		this.id = id;
