@@ -11,6 +11,23 @@ SELECT * FROM users;
 DELETE FROM users;
 
 
-DESC book;
-SELECT * FROM book;
-DELETE FROM book;
+CREATE USER toby@localhost IDENTIFIED BY '2222';
+
+-- CREATE DATABASE testdb;
+CREATE SCHEMA testdb DEFAULT CHARACTER SET UTF8;
+
+GRANT ALL PRIVILEGES ON testdb.* TO toby@localhost;
+
+SHOW DATABASES;
+
+
+
+CREATE TABLE game(
+	title		VARCHAR(30) PRIMARY KEY,
+	price		INT NOT NULL
+);
+DESC game;
+
+SELECT * FROM game;
+
+DELETE FROM game;
