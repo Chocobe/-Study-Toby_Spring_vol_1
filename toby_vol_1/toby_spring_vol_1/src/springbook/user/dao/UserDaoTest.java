@@ -9,7 +9,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -21,8 +20,6 @@ import springbook.user.domain.User;
 @ContextConfiguration(locations="/applicationContext.xml")
 public class UserDaoTest {
 	@Autowired
-	private ApplicationContext context;
-	
 	private UserDao dao;
 	
 	private User user1;
@@ -32,8 +29,6 @@ public class UserDaoTest {
 	
 	@Before
 	public void setUp() {
-		this.dao = context.getBean("userDao", UserDao.class);
-		
 		user1 = new User("Lucid", "루시드", "루시드_비번");
 		user2 = new User("Moon", "문", "문_비번");
 		user3 = new User("kyw", "김", "김_비번");
