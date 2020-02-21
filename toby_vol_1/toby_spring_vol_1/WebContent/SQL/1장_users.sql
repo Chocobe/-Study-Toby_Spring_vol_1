@@ -9,3 +9,8 @@ DESC users;
 SELECT * FROM users;
 
 DELETE FROM users;
+
+
+DESC book;
+SELECT * FROM book;
+DELETE FROM book;
