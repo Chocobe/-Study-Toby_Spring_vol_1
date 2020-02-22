@@ -1,4 +1,4 @@
-package springbook.user.dao;
+package springbook.user.tester;
 
 import static org.junit.Assert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
@@ -14,6 +14,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import springbook.user.dao.UserDao;
 import springbook.user.domain.User;
 
 
