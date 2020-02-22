@@ -22,78 +22,155 @@ public class UserDao {
 	
 	
 // add
-	public void add(User user) throws SQLException {
-		Connection c = dataSource.getConnection();
-		
-		PreparedStatement ps = c.prepareStatement("INSERT INTO users(id, name, password) VALUES(?, ?, ?)");
-		ps.setString(1, user.getId());
-		ps.setString(2, user.getName());
-		ps.setString(3, user.getPassword());
-		
-		ps.executeUpdate();
-		
-		ps.close();
-		c.close();
+	public void add(final User user) throws SQLException {
+		jdbcContextWithStatementStrategy(
+				new StatementStrategy() {
+					@Override
+					public PreparedStatement makePreparedStatement(Connection conn) throws SQLException {
+						PreparedStatement pstmt = conn.prepareStatement("INSERT INTO users(id, name, password) VALUES(?, ?, ?)");
+						pstmt.setString(1, user.getId());
+						pstmt.setString(2, user.getName());
+						pstmt.setString(3, user.getPassword());
+						
+						return pstmt;
+					}
+				}
+		);
 	}
 	
 	
 // get
 	public User get(String id) throws SQLException {
-		Connection c = dataSource.getConnection();
-		
-		PreparedStatement ps = c.prepareStatement("SELECT * FROM users WHERE id=?");
-		ps.setString(1, id);
-		
-		ResultSet rs = ps.executeQuery();
-		
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
 		User user = null;
 		
-		if(rs.next()) {
-			user = new User(rs.getString("id"),
-							rs.getString("name"),
-							rs.getString("password"));
+		try {
+			String sql = "SELECT * FROM users ";
+			sql += "WHERE id=?";
+			
+			conn = dataSource.getConnection();
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, id);
+			
+			rset = pstmt.executeQuery();
+			
+			if(rset.next()) {
+				user = new User(rset.getString("id"),
+								rset.getString("name"),
+								rset.getString("password"));
+			}
+			
+		} catch(SQLException e) {
+			throw e;
+			
+		} finally {
+			if(rset != null) {
+				try {
+					rset.close();
+					
+				} catch(SQLException e) { }
+			}
+			
+			if(pstmt != null) {
+				try {
+					pstmt.close();
+					
+				} catch(SQLException e) { }
+			}
+			
+			if(conn != null) {
+				try {
+					conn.close();
+					
+				} catch(SQLException e) { }
+			}
 		}
 		
-		rs.close();
-		ps.close();
-		c.close();
-		
-		if(user == null) throw new EmptyResultDataAccessException(1);
-		
+		if(user == null) {
+			throw new EmptyResultDataAccessException(1);
+		}
+
 		return user;
 	}
 	
 	
 // DELETE ALL
 	public void deleteAll() throws SQLException {
-		String sql = "DELETE FROM users";
-		
-		Connection conn = dataSource.getConnection();
-		PreparedStatement pstmt = conn.prepareStatement(sql);
-		
-		pstmt.executeUpdate();
-		
-		pstmt.close();
-		conn.close();
+		jdbcContextWithStatementStrategy(
+				new StatementStrategy() {
+					
+					@Override
+					public PreparedStatement makePreparedStatement(Connection conn) throws SQLException {
+						return conn.prepareStatement("DELETE FROM users");
+					}
+				}
+		);
+	}
+	
+	
+// jdbcContextWithStatementStrategy
+	public void jdbcContextWithStatementStrategy(StatementStrategy stmt) throws SQLException {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+
+		try {
+			conn = dataSource.getConnection();
+			pstmt = stmt.makePreparedStatement(conn);
+			
+			pstmt.executeUpdate();
+			
+		} catch(SQLException e) {
+			throw e;
+			
+		} finally {
+			if(pstmt != null) { try { pstmt.close(); } catch(SQLException e) {} }
+			if(conn != null) { try { conn.close(); } catch(SQLException e) {} }
+		}
 	}
 	
 	
 // COUNT(*)
 	public int getCount() throws SQLException {
-		String sql = "SELECT COUNT(*) FROM users";
-		
-		Connection conn = dataSource.getConnection();
-		PreparedStatement pstmt = conn.prepareStatement(sql);
-		
-		ResultSet rset = pstmt.executeQuery();
-		rset.next();
-		
-		int count = rset.getInt(1);
-		
-		rset.close();
-		pstmt.close();
-		conn.close();
-		
-		return count;
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
+
+		try {
+			String sql = "SELECT COUNT(*) FROM users";
+			
+			conn = dataSource.getConnection();
+			pstmt = conn.prepareStatement(sql);
+			rset = pstmt.executeQuery();
+			
+			rset.next();
+			return rset.getInt(1);
+			
+		} catch(SQLException e) {
+			throw e;
+			
+		} finally {
+			if(rset != null) {
+				try {
+					rset.close();
+					
+				} catch(SQLException e) { }
+			}
+			
+			if(pstmt != null) {
+				try {
+					pstmt.close();
+					
+				} catch(SQLException e) { }
+			}
+			
+			if(conn != null) {
+				try {
+					conn.close();
+					
+				} catch(SQLException e) { }
+			}
+		}
 	}
 }

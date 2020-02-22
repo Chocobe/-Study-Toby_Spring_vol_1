@@ -20,7 +20,7 @@ import springbook.user.domain.User;
 
 @DirtiesContext
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations="/test-applicationContext.xml")
+@ContextConfiguration(locations="/applicationContext.xml")
 public class UserDaoTest {
 	@Autowired
 	private UserDao dao;
