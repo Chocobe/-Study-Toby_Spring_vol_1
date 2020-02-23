@@ -14,16 +14,20 @@ import springbook.user.domain.User;
 
 public class UserDao {
 	private DataSource dataSource;
+	private JdbcContext jdbcContext;
 	
 	
 	public void setDataSource(DataSource dataSource) {
 		this.dataSource = dataSource;
+		
+		this.jdbcContext = new JdbcContext();
+		this.jdbcContext.setDataSource(dataSource);
 	}
 	
 	
 // add
 	public void add(final User user) throws SQLException {
-		jdbcContextWithStatementStrategy(
+		jdbcContext.workWithStatementStrategy(
 				new StatementStrategy() {
 					@Override
 					public PreparedStatement makePreparedStatement(Connection conn) throws SQLException {
@@ -98,7 +102,7 @@ public class UserDao {
 	
 // DELETE ALL
 	public void deleteAll() throws SQLException {
-		jdbcContextWithStatementStrategy(
+		jdbcContext.workWithStatementStrategy(
 				new StatementStrategy() {
 					
 					@Override

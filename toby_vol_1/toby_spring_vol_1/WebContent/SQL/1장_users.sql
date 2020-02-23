@@ -22,12 +22,12 @@ SHOW DATABASES;
 
 
 
-CREATE TABLE game(
+CREATE TABLE book(
 	title		VARCHAR(30) PRIMARY KEY,
+	auth		VARCHAR(30) NOT NULL,
 	price		INT NOT NULL
 );
-DESC game;
 
-SELECT * FROM game;
-
-DELETE FROM game;
+DESC book;
+SELECT * FROM book;
+DELETE FROM book;
