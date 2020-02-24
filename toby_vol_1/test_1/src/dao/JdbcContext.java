@@ -1,4 +1,4 @@
-package springbook.user.dao;
+package dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -21,7 +21,8 @@ public class JdbcContext {
 		
 		try {
 			conn = dataSource.getConnection();
-			pstmt = strategy.makePreparedStatement(conn);
+			pstmt = strategy.makePrepareStatement(conn);
+			
 			pstmt.executeUpdate();
 			
 		} catch(SQLException e) {
@@ -29,18 +30,18 @@ public class JdbcContext {
 			
 		} finally {
 			if(pstmt != null) { try { pstmt.close(); } catch(SQLException e) {} }
-			if(conn != null) { try { conn.close(); } catch(SQLException e) {} }
+			if(conn != null) { try { conn.close(); } catch(SQLException e) {} }			
 		}
 	}
+
 	
-	
-	public void executeSql(final String query) throws SQLException {
+	public void executeDeleteAllQuery(final String sql) throws SQLException {
 		workWithStatementStrategy(
 				new StatementStrategy() {
 					
 					@Override
-					public PreparedStatement makePreparedStatement(Connection conn) throws SQLException {
-						return conn.prepareStatement(query);
+					public PreparedStatement makePrepareStatement(Connection conn) throws SQLException {
+						return conn.prepareStatement(sql);
 					}
 				}
 		);

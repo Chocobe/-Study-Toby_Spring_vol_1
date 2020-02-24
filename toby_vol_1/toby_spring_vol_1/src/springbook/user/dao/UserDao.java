@@ -102,36 +102,7 @@ public class UserDao {
 	
 // DELETE ALL
 	public void deleteAll() throws SQLException {
-		jdbcContext.workWithStatementStrategy(
-				new StatementStrategy() {
-					
-					@Override
-					public PreparedStatement makePreparedStatement(Connection conn) throws SQLException {
-						return conn.prepareStatement("DELETE FROM users");
-					}
-				}
-		);
-	}
-	
-	
-// jdbcContextWithStatementStrategy
-	public void jdbcContextWithStatementStrategy(StatementStrategy stmt) throws SQLException {
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-
-		try {
-			conn = dataSource.getConnection();
-			pstmt = stmt.makePreparedStatement(conn);
-			
-			pstmt.executeUpdate();
-			
-		} catch(SQLException e) {
-			throw e;
-			
-		} finally {
-			if(pstmt != null) { try { pstmt.close(); } catch(SQLException e) {} }
-			if(conn != null) { try { conn.close(); } catch(SQLException e) {} }
-		}
+		this.jdbcContext.executeSql("DELETE FROM users");
 	}
 	
 	
