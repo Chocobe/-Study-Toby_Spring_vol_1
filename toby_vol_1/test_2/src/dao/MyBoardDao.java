@@ -9,9 +9,9 @@ import javax.sql.DataSource;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 
-import vo.Book;
+import vo.MyBoard;
 
-public class BookDao {
+public class MyBoardDao {
 	private DataSource dataSource;
 	private JdbcContext jdbcContext;
 	
@@ -20,47 +20,63 @@ public class BookDao {
 		this.dataSource = dataSource;
 		
 		this.jdbcContext = new JdbcContext();
-		jdbcContext.setDataSource(this.dataSource);
+		jdbcContext.setDataSource(dataSource);
 	}
 	
 	
-	public void insertBook(Book book) throws SQLException {
-		jdbcContext.workWithStatementStrategy (
-				new StatementStrategy() {
-					
-					@Override
-					public PreparedStatement makePrepareStatement(Connection conn) throws SQLException {
-						PreparedStatement pstmt = conn.prepareStatement("INSERT INTO book(title, auth, price) VALUES(?, ?, ?)");
-						
-						pstmt.setString(1, book.getTitle());
-						pstmt.setString(2, book.getAuth());
-						pstmt.setInt(3, book.getPrice());
-						
-						return pstmt;
-					}
-				}
-		);
+// insert
+	public int insert(MyBoard myBoard) throws SQLException {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		
+		int result = 0;
+		
+		try {
+			conn = dataSource.getConnection();
+			pstmt = conn.prepareStatement("INSERT INTO myBoard(id, title, content) VALUES(?, ?, ?)");
+			pstmt.setString(1, myBoard.getId());
+			pstmt.setString(2, myBoard.getTitle());
+			pstmt.setString(3, myBoard.getContent());
+			
+			result = pstmt.executeUpdate();
+			
+		} catch(SQLException e) {
+			throw e;
+			
+		} finally {
+			if(pstmt != null) { try { pstmt.close(); } catch(SQLException e) {} }
+			if(conn != null) { try { conn.close(); } catch(SQLException e) {} }
+		}
+		
+		return result;
 	}
 	
 	
-	public Book selectBook(String title) throws SQLException {
+// select
+	public MyBoard select(MyBoard myBoard) throws SQLException {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		
-		Book resultBook = null;
+		MyBoard selectBoard = null;
 		
 		try {
 			conn = dataSource.getConnection();
-			pstmt = conn.prepareStatement("SELECT * FROM book WHERE title=?");
-			pstmt.setString(1, title);
+			pstmt = conn.prepareStatement("SELECT * FROM myBoard WHERE id=? AND title=? AND content=?");
+			pstmt.setString(1, myBoard.getId());
+			pstmt.setString(2, myBoard.getTitle());
+			pstmt.setString(3, myBoard.getContent());
 			
 			rs = pstmt.executeQuery();
 			
 			if(rs.next()) {
-				resultBook = new Book(rs.getString("title"),
-									  rs.getString("auth"),
-									  rs.getInt("price"));
+				selectBoard = new MyBoard(rs.getInt("idx"),
+										  rs.getString("id"),
+										  rs.getString("title"),
+										  rs.getString("content"),
+										  rs.getDate("writeDate").toLocalDate(),
+										  rs.getInt("watch"));
+				
 			}
 			
 		} catch(SQLException e) {
@@ -72,19 +88,17 @@ public class BookDao {
 			if(conn != null) { try { conn.close(); } catch(SQLException e) {} }
 		}
 		
-		if(resultBook == null) {
-			throw new EmptyResultDataAccessException(1);
-		}
-		
-		return resultBook;
+		return selectBoard;
 	}
 	
 	
+// deleteAll
 	public void deleteAll() throws SQLException {
-		jdbcContext.executeDeleteAllQuery("DELETE FROM book");
+		jdbcContext.executeSQL("DELETE FROM myBoard");
 	}
 	
 	
+// count
 	public int count() throws SQLException {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -94,7 +108,7 @@ public class BookDao {
 		
 		try {
 			conn = dataSource.getConnection();
-			pstmt = conn.prepareStatement("SELECT COUNT(*) FROM book");
+			pstmt = conn.prepareStatement("SELECT COUNT(*) FROM myBoard");
 			rs = pstmt.executeQuery();
 			
 			if(rs.next()) {
