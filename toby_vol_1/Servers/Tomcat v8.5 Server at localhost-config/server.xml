@@ -37,6 +37,9 @@
          UserDatabaseRealm to authenticate users
     -->
     <Resource auth="Container" description="User database that can be updated and saved" factory="org.apache.catalina.users.MemoryUserDatabaseFactory" name="UserDatabase" pathname="conf/tomcat-users.xml" type="org.apache.catalina.UserDatabase"/>
+    
+	<Resource driverClassName="com.mysql.jdbc.Driver" maxActive="20" maxIdle="20" maxWait="5000" name="jdbc/mysql/test" password="1111" type="javax.sql.DataSource" url="jdbc:mysql://127.0.0.1:3306/awesomePet?serverTimezone=UTC" username="root"/>
+		
   </GlobalNamingResources>
 
   <!-- A "Service" is a collection of one or more "Connectors" that share
@@ -149,7 +152,7 @@
              Note: The pattern used is equivalent to using pattern="common" -->
         <Valve className="org.apache.catalina.valves.AccessLogValve" directory="logs" pattern="%h %l %u %t &quot;%r&quot; %s %b" prefix="localhost_access_log" suffix=".txt"/>
 
-      <Context docBase="toby_spring_vol_1" path="/toby_spring_vol_1" reloadable="true" source="org.eclipse.jst.jee.server:toby_spring_vol_1"/></Host>
+      <Context docBase="toby_spring_vol_1" path="/toby_spring_vol_1" reloadable="true" source="org.eclipse.jst.jee.server:toby_spring_vol_1"/><Context docBase="mvc2Frame_review" path="/mvc2Frame_review" reloadable="true" source="org.eclipse.jst.jee.server:mvc2Frame_review"/></Host>
     </Engine>
   </Service>
 </Server>

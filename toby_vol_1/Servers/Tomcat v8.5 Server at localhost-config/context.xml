@@ -25,4 +25,6 @@
     <!--
     <Manager pathname="" />
     -->
+    
+    <ResourceLink global="jdbc/mysql/test" name="jdbc/mysql/test" class="com.mysql.jdbc.Driver"/>
 </Context>
