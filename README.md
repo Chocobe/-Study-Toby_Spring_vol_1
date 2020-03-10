@@ -47,4 +47,4 @@
 >
 >   1. **수동 DI** 를 이용한 DI
 >
->   1. **text파일** 읽어오기 ()
+>   1. **text파일** 읽어오기 [이동](https://github.com/Chocobe/-Study-Toby_Spring_vol_1/tree/master/toby_vol_1/fileReaderTest/src/fileReaderTest)
