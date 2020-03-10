@@ -1,151 +1,65 @@
 package springbook.user.dao;
 
-import java.sql.Connection;
-
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.sql.DataSource;
 
-import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 
 import springbook.user.domain.User;
 
 public class UserDao {
-	private DataSource dataSource;
-	private JdbcContext jdbcContext;
+	private JdbcTemplate jdbcTemplate;
+	private RowMapper<User> userMapper = new RowMapper<User>() {
+		@Override
+		public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+			User user = new User();
+			user.setId(rs.getString("id"));
+			user.setName(rs.getString("name"));
+			user.setPassword(rs.getString("password"));
+			
+			return user;
+		}
+	};
 	
 	
 	public void setDataSource(DataSource dataSource) {
-		this.dataSource = dataSource;
-		
-		this.jdbcContext = new JdbcContext();
-		this.jdbcContext.setDataSource(dataSource);
+		this.jdbcTemplate = new JdbcTemplate(dataSource);
 	}
 	
 	
 // add
 	public void add(final User user) throws SQLException {
-		jdbcContext.workWithStatementStrategy(
-				new StatementStrategy() {
-					@Override
-					public PreparedStatement makePreparedStatement(Connection conn) throws SQLException {
-						PreparedStatement pstmt = conn.prepareStatement("INSERT INTO users(id, name, password) VALUES(?, ?, ?)");
-						pstmt.setString(1, user.getId());
-						pstmt.setString(2, user.getName());
-						pstmt.setString(3, user.getPassword());
-						
-						return pstmt;
-					}
-				}
-		);
+		jdbcTemplate.update("INSERT INTO users(id, name, password) VALUES(?, ?, ?)", user.getId(), user.getName(), user.getPassword());
 	}
 	
 	
 // get
 	public User get(String id) throws SQLException {
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rset = null;
-		User user = null;
-		
-		try {
-			String sql = "SELECT * FROM users ";
-			sql += "WHERE id=?";
-			
-			conn = dataSource.getConnection();
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, id);
-			
-			rset = pstmt.executeQuery();
-			
-			if(rset.next()) {
-				user = new User(rset.getString("id"),
-								rset.getString("name"),
-								rset.getString("password"));
-			}
-			
-		} catch(SQLException e) {
-			throw e;
-			
-		} finally {
-			if(rset != null) {
-				try {
-					rset.close();
-					
-				} catch(SQLException e) { }
-			}
-			
-			if(pstmt != null) {
-				try {
-					pstmt.close();
-					
-				} catch(SQLException e) { }
-			}
-			
-			if(conn != null) {
-				try {
-					conn.close();
-					
-				} catch(SQLException e) { }
-			}
-		}
-		
-		if(user == null) {
-			throw new EmptyResultDataAccessException(1);
-		}
-
-		return user;
+		return jdbcTemplate.queryForObject("SELECT * FROM users WHERE id=?", 
+										   new Object[] {id}, 
+										   userMapper);
+	}
+	
+	
+// getAll
+	public List<User> getAll() {
+		return this.jdbcTemplate.query("SELECT * FROM users", 
+									   userMapper);
 	}
 	
 	
 // DELETE ALL
 	public void deleteAll() throws SQLException {
-		this.jdbcContext.executeSql("DELETE FROM users");
+		this.jdbcTemplate.update("DELETE FROM users");
 	}
 	
 	
 // COUNT(*)
 	public int getCount() throws SQLException {
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rset = null;
-
-		try {
-			String sql = "SELECT COUNT(*) FROM users";
-			
-			conn = dataSource.getConnection();
-			pstmt = conn.prepareStatement(sql);
-			rset = pstmt.executeQuery();
-			
-			rset.next();
-			return rset.getInt(1);
-			
-		} catch(SQLException e) {
-			throw e;
-			
-		} finally {
-			if(rset != null) {
-				try {
-					rset.close();
-					
-				} catch(SQLException e) { }
-			}
-			
-			if(pstmt != null) {
-				try {
-					pstmt.close();
-					
-				} catch(SQLException e) { }
-			}
-			
-			if(conn != null) {
-				try {
-					conn.close();
-					
-				} catch(SQLException e) { }
-			}
-		}
+		return jdbcTemplate.queryForInt("SELECT COUNT(*) FROM users");
 	}
 }
