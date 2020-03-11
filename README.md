@@ -6,7 +6,7 @@
 
 > ### 3장. [템플릿](https://github.com/Chocobe/-Study-Toby_Spring_vol_1/blob/master/3%EC%9E%A5_%ED%85%9C%ED%94%8C%EB%A6%BF.md)
 
-> ### 4장. [예외처리]()
+> ### 4장. [예외처리](https://github.com/Chocobe/-Study-Toby_Spring_vol_1/blob/master/4%EC%9E%A5_%EC%98%88%EC%99%B8%EC%B2%98%EB%A6%AC.md)
 
 
 ---
