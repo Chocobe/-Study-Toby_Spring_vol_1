@@ -17,6 +17,8 @@ public class Calculator {
 			sum += Integer.valueOf(line);
 		}
 		
+		br.close();
+		
 		return sum;
 	}
 }

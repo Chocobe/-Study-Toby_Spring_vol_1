@@ -10,4 +10,5 @@ public interface UserDao {
 	abstract public List<User> getAll();
 	abstract public void deleteAll();
 	abstract public int getCount();
+	abstract public void update(User user);
 }

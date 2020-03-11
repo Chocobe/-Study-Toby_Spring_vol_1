@@ -4,7 +4,6 @@ import javax.sql.DataSource;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
-import static org.junit.matchers.JUnitMatchers.*;
 
 import java.sql.SQLException;
 
@@ -28,15 +27,11 @@ public class MyBoardDaoTest {
 	private MyBoardDao myBoardDao;
 	
 	private MyBoard myBoard_1;
-	private MyBoard myBoard_2;
-	private MyBoard myBoard_3;
 	
 	
 	@Before
 	public void setUp() {
 		myBoard_1 = new MyBoard("Chocobe", "제목_1", "내용_1");
-		myBoard_2 = new MyBoard("LucidMoon", "제목_2", "내용_2");
-		myBoard_3 = new MyBoard("백엔드", "제목_3", "내용_3");
 	}
 	
 	

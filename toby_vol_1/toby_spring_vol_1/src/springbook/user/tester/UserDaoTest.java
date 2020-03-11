@@ -12,7 +12,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator;
@@ -22,6 +21,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import springbook.user.dao.UserDaoJdbc;
+import springbook.user.domain.Level;
 import springbook.user.domain.User;
 
 
@@ -42,9 +42,9 @@ public class UserDaoTest {
 	
 	@Before
 	public void setUp() {
-		user1 = new User("Lucid", "루시드", "루시드_비번");		// id순서 2번 - L
-		user2 = new User("Moon", "문", "문_비번");				// id순서 3번 - M
-		user3 = new User("kyw", "김", "김_비번");				// id순서 1번 - K
+		user1 = new User("gyumee", "박성철", "springno1", Level.BASIC, 1, 0);			// id순서 2번 - g
+		user2 = new User("leegw700", "이길원", "springno2", Level.SILVER, 55, 10);	// id순서 3번 - l
+		user3 = new User("bumjin", "박범진", "springno3", Level.GOLD, 100, 40);		// id순서 1번 - b
 	}
 	
 	
@@ -54,7 +54,6 @@ public class UserDaoTest {
 		dao.deleteAll();
 		assertThat(dao.getCount(), is(0));
 		
-		
 		// add() 테스트
 		dao.add(user1);
 		assertThat(dao.getCount(), is(1));
@@ -62,15 +61,12 @@ public class UserDaoTest {
 		dao.add(user2);
 		assertThat(dao.getCount(), is(2));
 		
-		
 		// get() 테스트
 		User userget1 = dao.get(user1.getId());
-		assertThat(userget1.getId(), is(user1.getId()));
-		assertThat(userget1.getPassword(), is(user1.getPassword()));
+		checkSameUser(userget1, user1);
 		
 		User userget2 = dao.get(user2.getId());
-		assertThat(userget2.getId(), is(user2.getId()));
-		assertThat(userget2.getPassword(), is(user2.getPassword()));
+		checkSameUser(userget2, user2);
 	}
 	
 	
@@ -152,10 +148,37 @@ public class UserDaoTest {
 	}
 	
 	
+	@Test
+	public void update() {
+		dao.deleteAll();
+		assertThat(dao.getCount(), is(0));
+		
+		dao.add(user1);
+		dao.add(user2);
+		
+		user1.setName("오민규");
+		user1.setPassword("springno6");
+		user1.setLevel(Level.GOLD);
+		user1.setLogin(1000);
+		user1.setRecommand(999);
+		
+		dao.update(user1);
+		
+		User user1update = dao.get(user1.getId());
+		checkSameUser(user1update, user1);
+		
+		User user2same = dao.get(user2.getId());
+		checkSameUser(user2same, user2);
+	}
+	
+	
 // User객체의 동등성 검사 메서드
 	private void checkSameUser(User user1, User user2) {
 		assertThat(user1.getId(), is(user2.getId()));
 		assertThat(user1.getName(), is(user2.getName()));
 		assertThat(user1.getPassword(), is(user2.getPassword()));
+		assertThat(user1.getLevel(), is(user2.getLevel()));
+		assertThat(user1.getLogin(), is(user2.getLogin()));
+		assertThat(user1.getRecommand(), is(user2.getRecommand()));
 	}
 }

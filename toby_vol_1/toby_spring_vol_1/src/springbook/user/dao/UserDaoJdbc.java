@@ -9,10 +9,9 @@ import javax.sql.DataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
-import com.mysql.jdbc.MysqlErrorNumbers;
-
+import springbook.user.domain.Level;
 import springbook.user.domain.User;
-import springbook.user.exception.DuplicateUserIdException;
+
 
 public class UserDaoJdbc implements UserDao {
 	private JdbcTemplate jdbcTemplate;
@@ -23,6 +22,9 @@ public class UserDaoJdbc implements UserDao {
 			user.setId(rs.getString("id"));
 			user.setName(rs.getString("name"));
 			user.setPassword(rs.getString("password"));
+			user.setLevel(Level.valueOf(rs.getInt("level")));
+			user.setLogin(rs.getInt("login"));
+			user.setRecommand(rs.getInt("recommand"));
 			
 			return user;
 		}
@@ -37,7 +39,13 @@ public class UserDaoJdbc implements UserDao {
 // add
 	@Override
 	public void add(User user) {
-		jdbcTemplate.update("INSERT INTO users(id, name, password) VALUES(?, ?, ?)", user.getId(), user.getName(), user.getPassword());
+		jdbcTemplate.update("INSERT INTO users(id, name, password, level, login, recommand) VALUES(?, ?, ?, ?, ?, ?)", 
+							user.getId(), 
+							user.getName(), 
+							user.getPassword(),
+							user.getLevel().intValue(),
+							user.getLogin(),
+							user.getRecommand());
 	}
 	
 	
@@ -69,5 +77,13 @@ public class UserDaoJdbc implements UserDao {
 	@Override
 	public int getCount() {
 		return jdbcTemplate.queryForInt("SELECT COUNT(*) FROM users");
+	}
+
+
+// update
+	@Override
+	public void update(User user) {
+		jdbcTemplate.update("UPDATE users SET name=?, password=?, level=?, login=?, recommand=? WHERE id=?", 
+							user.getName(), user.getPassword(), user.getLevel().intValue(), user.getLogin(), user.getRecommand(), user.getId());
 	}
 }
