@@ -6,6 +6,8 @@
 
 > ### 3장. [템플릿](https://github.com/Chocobe/-Study-Toby_Spring_vol_1/blob/master/3%EC%9E%A5_%ED%85%9C%ED%94%8C%EB%A6%BF.md)
 
+> ### 4장. [예외처리]()
+
 
 ---
 
@@ -47,4 +49,13 @@
 >
 >   1. **수동 DI** 를 이용한 DI
 >
->   1. [text파일 읽어오기](https://github.com/Chocobe/-Study-Toby_Spring_vol_1/tree/master/toby_vol_1/fileReaderTest/src/fileReaderTest)
+>   1. [text파일 읽어오기 예제](https://github.com/Chocobe/-Study-Toby_Spring_vol_1/tree/master/toby_vol_1/fileReaderTest/src/fileReaderTest)
+
+
+### 4장. 예외처리
+
+> 1. 스프링의 상위 예외 클래스인 DataAccessException에 대한 이해
+>
+> 1. 발생한 예외의 구체적인 예외 클래스 확인
+>
+> 1. 복구할 수 없는 예외를 **RuntimeException**으로 포장하기
