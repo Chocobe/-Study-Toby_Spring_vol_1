@@ -6,6 +6,8 @@ import static org.junit.Assert.*;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.sql.DataSource;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,11 +24,9 @@ import springbook.user.tester.UserServiceTest.TestUserService.TestUserServiceExc
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations="/applicationContext.xml")
 public class UserServiceTest {
-	@Autowired
-	private UserService userService;
-	
-	@Autowired
-	private UserDao userDao;
+	@Autowired private UserService userService;
+	@Autowired private UserDao userDao;
+	@Autowired private DataSource dataSource;
 	
 	private List<User> users;
 	
@@ -50,7 +50,7 @@ public class UserServiceTest {
 	
 	
 	@Test
-	public void upgradeLevels() {
+	public void upgradeLevels() throws Exception {
 		userDao.deleteAll();
 		
 		for(User user : users) {
@@ -105,9 +105,10 @@ public class UserServiceTest {
 	
 	
 	@Test
-	public void upgradeAllOrNothing() {
+	public void upgradeAllOrNothing() throws Exception {
 		UserService testUserService = new TestUserService(users.get(3).getId());
 		testUserService.setUserDao(this.userDao);
+		testUserService.setDataSource(this.dataSource);
 		
 		userDao.deleteAll();
 		

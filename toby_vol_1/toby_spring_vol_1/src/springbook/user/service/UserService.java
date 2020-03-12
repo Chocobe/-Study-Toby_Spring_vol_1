@@ -1,6 +1,12 @@
 package springbook.user.service;
 
+import java.sql.Connection;
 import java.util.List;
+
+import javax.sql.DataSource;
+
+import org.springframework.jdbc.datasource.DataSourceUtils;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import springbook.user.dao.UserDao;
 import springbook.user.domain.Level;
@@ -8,8 +14,7 @@ import springbook.user.domain.User;
 
 public class UserService {
 	private UserDao userDao;
-	
-//	private UserLevelUpgradePolicy userLevelUpgradePolicy;
+	private DataSource dataSource;
 	
 	public static final int MIN_LOGCOUNT_FOR_SILVER = 50;
 	public static final int MIN_RECOMMEND_FOR_GOLD = 30;
@@ -19,43 +24,35 @@ public class UserService {
 		this.userDao = userDao;
 	}
 	
-//	public void setUserLevelUpgradePolicy(UserLevelUpgradePolicy userLevelUpgradePolicy) {
-//		this.userLevelUpgradePolicy = userLevelUpgradePolicy;
-//	}
+	public void setDataSource(DataSource dataSource) {
+		this.dataSource = dataSource;
+	}
 	
 	
-	public void upgradeLevels() {
-		List<User> users = userDao.getAll();
+	public void upgradeLevels() throws Exception {
+		TransactionSynchronizationManager.initSynchronization();
+		Connection conn = DataSourceUtils.getConnection(dataSource);
+		conn.setAutoCommit(false);
 		
-		for(User user : users) {
-//			if(userLevelUpgradePolicy.canUpgradeLevel(user)) {
-//				userLevelUpgradePolicy.upgradeLevel(user);
-//			}
+		try {
+			List<User> users = userDao.getAll();
 			
-			if(canUpgradeLevel(user)) {
-				upgradeLevel(user);
+			for(User user : users) {
+				if(canUpgradeLevel(user)) {
+					upgradeLevel(user);
+				}
 			}
 			
-//			Boolean changed = null;
-//			
-//			if(user.getLevel() == Level.BASIC && user.getLogin() >= 50) {
-//				user.setLevel(Level.SILVER);
-//				changed = true;
-//				
-//			} else if(user.getLevel() == Level.SILVER && user.getRecommand() >= 30) {
-//				user.setLevel(Level.GOLD);
-//				changed = true;
-//				
-//			} else if(user.getLevel() == Level.GOLD) {
-//				changed = false;
-//				
-//			} else {
-//				changed = false;
-//			}
-//			
-//			if(changed == true) {
-//				userDao.update(user);
-//			}
+			conn.commit();
+			
+		} catch(Exception e) {
+			conn.rollback();
+			throw e;
+			
+		} finally {
+			DataSourceUtils.releaseConnection(conn, dataSource);
+			TransactionSynchronizationManager.unbindResource(this.dataSource);
+			TransactionSynchronizationManager.clearSynchronization();
 		}
 	}
 	
@@ -85,25 +82,4 @@ public class UserService {
 		
 		userDao.add(user);
 	}
-//	
-//	
-//	static class TestUserService extends UserService {
-//		// 이 아이디가 작업요청되면, 예외를 발생시킬 예정
-//		private String id;
-//		
-//		
-//		private TestUserService(String id) {
-//			this.id = id;
-//		}
-//		
-//		
-//		@Override
-//		protected void upgradeLevel(User user) {
-//			if(user.getId().equals(this.id)) throw new TestUserServiceException();
-//			super.upgradeLevel(user);
-//		}
-//		
-//		
-//		static class TestUserServiceException extends RuntimeException { }
-//	}
 }
