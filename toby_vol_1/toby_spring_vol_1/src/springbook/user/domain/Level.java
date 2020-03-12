@@ -1,20 +1,32 @@
 package springbook.user.domain;
 
 public enum Level {
-	BASIC(1), SILVER(2), GOLD(3);
+	GOLD(3, null),
+	SILVER(2, GOLD),
+	BASIC(1, SILVER); 
+	 
+	
 	
 	private final int value;
+	private final Level next;
 	
 	
 // DB에 저장할 값을 넣어줄 생성자
-	private Level(int value) {
+	private Level(int value, Level next) {
 		this.value = value;
+		this.next = next;
 	}
 	
 	
 // int값 가져오기 (POJO -> DB 경우에 사용)
 	public int intValue() {
 		return value;
+	}
+	
+	
+// 다음 등급 가져오기
+	public Level nextLevel() {
+		return next;
 	}
 	
 	
