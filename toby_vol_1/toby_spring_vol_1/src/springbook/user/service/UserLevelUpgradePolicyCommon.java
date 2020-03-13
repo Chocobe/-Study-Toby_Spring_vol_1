@@ -18,8 +18,8 @@ public class UserLevelUpgradePolicyCommon implements UserLevelUpgradePolicy {
 		Level currentLevel = user.getLevel();
 		
 		switch(currentLevel) {
-			case BASIC: return (user.getLogin() >= UserService.MIN_LOGCOUNT_FOR_SILVER);
-			case SILVER: return (user.getRecommend() >= UserService.MIN_RECOMMEND_FOR_GOLD);
+			case BASIC: return (user.getLogin() >= UserServiceImpl.MIN_LOGCOUNT_FOR_SILVER);
+			case SILVER: return (user.getRecommend() >= UserServiceImpl.MIN_RECOMMEND_FOR_GOLD);
 			case GOLD: return false;
 			default: throw new IllegalStateException("Unknown Level : " + currentLevel);
 		}
