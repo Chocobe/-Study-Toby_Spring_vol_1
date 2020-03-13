@@ -3,6 +3,7 @@ package springbook.user.tester;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -10,6 +11,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.MailException;
+import org.springframework.mail.MailSender;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -20,6 +25,7 @@ import springbook.user.domain.User;
 import springbook.user.service.UserService;
 import springbook.user.tester.UserServiceTest.TestUserService.TestUserServiceException;
 
+@DirtiesContext
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations="/applicationContext.xml")
 public class UserServiceTest {
@@ -27,17 +33,19 @@ public class UserServiceTest {
 	@Autowired private UserDao userDao;
 	@Autowired private PlatformTransactionManager transactionManager;
 	
+	@Autowired private MailSender mailSender;
+	
 	private List<User> users;
 	
 	
 	@Before
 	public void setUp() {
 		users = Arrays.asList(
-				new User("bumjin", "박범진", "p1", Level.BASIC, UserService.MIN_LOGCOUNT_FOR_SILVER - 1, 0),
-				new User("joytouch", "강명성", "p2", Level.BASIC, UserService.MIN_LOGCOUNT_FOR_SILVER, 0),
-				new User("erwins", "신승한", "p3", Level.SILVER, 60, UserService.MIN_RECOMMEND_FOR_GOLD - 1),
-				new User("madnite1", "이상호", "p4", Level.SILVER, 60, UserService.MIN_RECOMMEND_FOR_GOLD),
-				new User("green", "오민규", "p5", Level.GOLD, 100, Integer.MAX_VALUE)
+				new User("bumjin", "박범진", "p1", "email_1@test.com", Level.BASIC, UserService.MIN_LOGCOUNT_FOR_SILVER - 1, 0),
+				new User("joytouch", "강명성", "p2", "email_2@test.com", Level.BASIC, UserService.MIN_LOGCOUNT_FOR_SILVER, 0),
+				new User("erwins", "신승한", "p3", "email_3@test.com", Level.SILVER, 60, UserService.MIN_RECOMMEND_FOR_GOLD - 1),
+				new User("madnite1", "이상호", "p4", "email_4@test.com", Level.SILVER, 60, UserService.MIN_RECOMMEND_FOR_GOLD),
+				new User("green", "오민규", "p5", "email_5@test.com", Level.GOLD, 100, Integer.MAX_VALUE)
 		);
 	}
 	
@@ -58,6 +66,9 @@ public class UserServiceTest {
 			userDao.add(user);
 		}
 		
+		MockMailSender mockMailSender = new MockMailSender();
+		userService.setMailSender(mockMailSender);
+		
 		userService.upgradeLevels();
 		
 		checkLevelUpgraded(users.get(0), false);
@@ -66,11 +77,10 @@ public class UserServiceTest {
 		checkLevelUpgraded(users.get(3), true);
 		checkLevelUpgraded(users.get(4), false);
 		
-//		checkLevels(users.get(0), Level.BASIC);
-//		checkLevels(users.get(1), Level.SILVER);
-//		checkLevels(users.get(2), Level.SILVER);
-//		checkLevels(users.get(3), Level.GOLD);
-//		checkLevels(users.get(4), Level.GOLD);
+		List<String> request = mockMailSender.getRequests();
+		assertThat(request.size(), is(2));
+		assertThat(request.get(0), is(users.get(1).getEmail()));
+		assertThat(request.get(1), is(users.get(3).getEmail()));
 	}
 	
 	
@@ -110,6 +120,7 @@ public class UserServiceTest {
 		UserService testUserService = new TestUserService(users.get(3).getId());
 		testUserService.setUserDao(this.userDao);
 		testUserService.setTransactionManager(this.transactionManager);
+		testUserService.setMailSender(this.mailSender);
 		
 		userDao.deleteAll();
 		
@@ -145,6 +156,28 @@ public class UserServiceTest {
 		
 		static class TestUserServiceException extends RuntimeException {
 			private static final long serialVersionUID = -1157034507180993791L;
+		}
+	}
+	
+	
+	static class MockMailSender implements MailSender {
+		private List<String> requests = new ArrayList<String>();
+		
+		
+		public List<String> getRequests() {
+			return requests;
+		}
+		
+		
+		@Override
+		public void send(SimpleMailMessage mailMessage) throws MailException {
+			requests.add(mailMessage.getTo()[0]);
+		}
+		
+		
+		@Override
+		public void send(SimpleMailMessage[] mailMessage) throws MailException {
+			
 		}
 	}
 }

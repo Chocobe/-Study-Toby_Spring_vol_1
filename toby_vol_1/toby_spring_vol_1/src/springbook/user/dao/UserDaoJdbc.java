@@ -22,9 +22,10 @@ public class UserDaoJdbc implements UserDao {
 			user.setId(rs.getString("id"));
 			user.setName(rs.getString("name"));
 			user.setPassword(rs.getString("password"));
+			user.setEmail(rs.getString("email"));
 			user.setLevel(Level.valueOf(rs.getInt("level")));
 			user.setLogin(rs.getInt("login"));
-			user.setRecommand(rs.getInt("recommand"));
+			user.setRecommend(rs.getInt("recommend"));
 			
 			return user;
 		}
@@ -39,13 +40,14 @@ public class UserDaoJdbc implements UserDao {
 // add
 	@Override
 	public void add(User user) {
-		jdbcTemplate.update("INSERT INTO users(id, name, password, level, login, recommand) VALUES(?, ?, ?, ?, ?, ?)", 
+		jdbcTemplate.update("INSERT INTO users(id, name, password, email, level, login, recommend) VALUES(?, ?, ?, ?, ?, ?, ?)", 
 							user.getId(), 
 							user.getName(), 
 							user.getPassword(),
+							user.getEmail(),
 							user.getLevel().intValue(),
 							user.getLogin(),
-							user.getRecommand());
+							user.getRecommend());
 	}
 	
 	
@@ -83,7 +85,7 @@ public class UserDaoJdbc implements UserDao {
 // update
 	@Override
 	public void update(User user) {
-		jdbcTemplate.update("UPDATE users SET name=?, password=?, level=?, login=?, recommand=? WHERE id=?", 
-							user.getName(), user.getPassword(), user.getLevel().intValue(), user.getLogin(), user.getRecommand(), user.getId());
+		jdbcTemplate.update("UPDATE users SET name=?, password=?, email=?, level=?, login=?, recommend=? WHERE id=?", 
+							user.getName(), user.getPassword(), user.getEmail(), user.getLevel().intValue(), user.getLogin(), user.getRecommend(), user.getId());
 	}
 }

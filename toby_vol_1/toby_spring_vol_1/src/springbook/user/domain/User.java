@@ -5,9 +5,11 @@ public class User {
 	private String name;
 	private String password;
 	
+	private String email;
+	
 	private Level level;
 	private int login;
-	private int recommand;
+	private int recommend;
 	
 	
 // 생성자
@@ -16,15 +18,17 @@ public class User {
 	public User(String id,
 				String name,
 				String password,
+				String email,
 				Level level,
 				int login,
-				int recommand) {
+				int recommend) {
 		this.id = id;
 		this.name = name;
 		this.password = password;
+		this.email = email;
 		this.level = level;
 		this.login = login;
-		this.recommand = recommand;
+		this.recommend = recommend;
 	}
 	
 	
@@ -68,6 +72,15 @@ public class User {
 	}
 	
 	
+// email
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	public String getEmail() {
+		return email;
+	}
+	
+	
 // level
 	public void setLevel(Level level) {
 		this.level = level;
@@ -86,11 +99,11 @@ public class User {
 	}
 	
 	
-// recommand
-	public void setRecommand(int recommand) {
-		this.recommand = recommand;
+// recommend
+	public void setRecommend(int recommend) {
+		this.recommend = recommend;
 	}
-	public int getRecommand() {
-		return recommand;
+	public int getRecommend() {
+		return recommend;
 	}
 }
