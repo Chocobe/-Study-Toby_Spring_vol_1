@@ -8,7 +8,12 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
+import org.aopalliance.intercept.MethodInterceptor;
+import org.aopalliance.intercept.MethodInvocation;
 import org.junit.Test;
+import org.springframework.aop.framework.ProxyFactoryBean;
+import org.springframework.aop.support.DefaultPointcutAdvisor;
+import org.springframework.aop.support.NameMatchMethodPointcut;
 
 public class ProxyTest {
 	@Test
@@ -25,7 +30,41 @@ public class ProxyTest {
 														   new UppercaseHandler(new HelloTarget()));
 		assertThat(proxiedHello.sayHello("Toby"), is("HELLO TOBY"));
 		assertThat(proxiedHello.sayHi("Toby"), is("Hi Toby"));
-		assertThat(proxiedHello.sayThankYou("Toby"), is("Thank YOU TOBY"));
+		assertThat(proxiedHello.sayThankYou("Toby"), is("Thank you Toby"));
+	}
+	
+	
+	// Advice 테스트
+	@Test
+	public void proxyFactoryBean() {
+		ProxyFactoryBean pfBean = new ProxyFactoryBean();
+		pfBean.setTarget(new HelloTarget());
+		pfBean.addAdvice(new UppercaseAdvice());
+		
+		Hello proxiedHello = (Hello)pfBean.getObject();
+		assertThat(proxiedHello.sayHello("Toby"), is("HELLO TOBY"));
+		assertThat(proxiedHello.sayHi("Toby"), is("HI TOBY"));
+		assertThat(proxiedHello.sayThankYou("Toby"), is("THANK YOU TOBY"));
+	}
+	
+	
+	// Pointcut 테스트
+	@Test
+	public void pointcutAdvisor() {
+		MethodInterceptor advice = new UppercaseAdvice();
+		
+		NameMatchMethodPointcut pointcut = new NameMatchMethodPointcut();
+		pointcut.setMappedName("sayH*");
+
+		ProxyFactoryBean pfBean = new ProxyFactoryBean();
+		pfBean.setTarget(new HelloTarget());
+		pfBean.addAdvisor(new DefaultPointcutAdvisor(pointcut, advice));
+		
+		Hello proxiedHello = (Hello)pfBean.getObject();
+		
+		assertThat(proxiedHello.sayHello("Toby"), is("HELLO TOBY"));
+		assertThat(proxiedHello.sayHi("Toby"), is("HI TOBY"));
+		assertThat(proxiedHello.sayThankYou("Toby"), is("Thank you Toby"));
 	}
 	
 	
@@ -33,6 +72,15 @@ public class ProxyTest {
 		abstract public String sayHello(String name);
 		abstract public String sayHi(String name);
 		abstract public String sayThankYou(String name);
+	}
+	
+	
+	static class UppercaseAdvice implements MethodInterceptor {
+		@Override
+		public Object invoke(MethodInvocation invocation) throws Throwable {
+			String ret = (String)invocation.proceed();
+			return ret.toUpperCase();
+		}
 	}
 	
 	

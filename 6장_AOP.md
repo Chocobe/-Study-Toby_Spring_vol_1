@@ -245,3 +245,122 @@
             }
         }
     ```
+
+
+---
+
+
+## 🐫 프록시 팩토리 빈
+
+* **프록시** 객체생성을 추상화한 팩토리빈 이다.
+
+* 팩토리빈 객체를 생성할 떄 필요했던 **타겟** 은, 프록시 팩토리 빈에는 필요 없다.
+
+* 타겟정보는 프록시 팩토리 빈 생성 후, **setTarget()** 메서드로 설정한다.
+
+
+---
+
+
+## 🐫 Advice : (타겟정보가 필요없는) 순수 부가기능
+
+* **addAdvice()**의 인자는 **Advice 인터페이스**를 구현한 객체이다.
+
+* **Advice 인터페이스**는 타겟에 **종속되지 않는**, **순수한 부가기능 오브젝트** 이다.
+
+* 부가기능을 담당할 클래스는 **MethodInterceptor 인터페이스** 를 구현한다. (MethodInterceptor는 Advice의 하위 인터페이스)
+
+* 사용법
+
+    ```java
+        public class UppercaseAdvice implements MethodInterceptor {
+            @Override
+            public Object invoke(MethodInvocation invocation) throws Exception {
+                String result = (String)invocation.proceed();
+                return result.toUpperCase();
+            }
+        }
+    ```
+
+    ```java
+        ProxyFactoryBean pfBean = new ProxyFactoryBean();
+        pfBean.setTarget(new HelloTarget());
+        pfBean.addAdvice(new UppercaseAdvice());
+
+        Hello proxiedHello = (Hello)pfBean.getObject();
+        assertThat(proxiedHello.sayHello("Toby"), is("HELLO TOBY"));
+        assertThat(proxiedHello.sayHi("Toby"), is("HI TOBY"));
+        assertThat(proxiedHello.sayThankYou("Toby"), is("THANK YOU TOBY"));
+    ```
+
+---
+
+> ### 🐫 Pointcut
+
+* Advice를 적용할 대상 메서드를 선별하는 역할을 한다.
+
+* 메서드 이름으로 선정하는 pointcut 클래스는 **NameMatchMethodPointcut** 이다.
+
+* 메서드 이름 조건을 설정할 때는, NameMatchMethodPointcut객체의 **setMappedName("조건")** 으로 설정한다.
+
+    * 조건값에 *를 사용할 경우, **LIKE** 조건이 된다.
+
+* ProxyFactoryBean에 Pointcut을 설정할 때는, Pointcut객체와 Advice객체를 묶은 **Advisor**객체로 등록해야 한다.
+
+* ProxyFactoryBean에 Advisor를 등록할 때는, **addAdvisor(pointcut객체, advice객체);** 형식으로 등록한다.
+
+* 사용법
+
+    ```java
+        // Advice만 사용할 경우,
+        ProxyFactoryBean pfBean = new ProxyFactoryBean();
+        pfBean.setTarget(대상 객체);
+        pfBean.addAdvice(Advice객체);
+    ```
+
+    ```java
+        // 메서드명을 이용한 Pointcut을 사용할 경우,
+        NameMatchMethodPointcut pointcut = new NameMatchMethodPointcut();
+        pointcut.setMappedName("sayH*");
+
+        MethodInterceptor advice = new UppercaseAdvice();
+        
+        ProxyFactoryBean pfBean = new ProxyFactoryBean();
+        pfBean.setTarget(new HelloTarget());
+        pfBean.addAdvisor(new DefaultPointcutAdvisor(pointcut, advice));
+
+        Hello proxiedHello = (Hello)pfBean.getObject();
+        assertThat(proxiedHello.sayHello("Toby"), is("HELLO TOBY"));
+        assertThat(proxiedHello.sayHi("Toby"), is("HI TOBY"));
+        assertThat(proxiedHello.sayThankYou("Toby"), is("Thank you Toby"));
+    ```
+
+* xml을 이용한 ProxyFactoryBean DI설정하기
+
+    ```xml
+        <bean id="userServiceImpl" class="경로">
+            <property name="userDao" ref="userDao"/>
+        </bean>
+
+        <bean id="transactionAdvice" class="TransactionAdvice경로">
+            <property name="transactionManager" ref="transactionManager"/>
+        </bean>
+
+        <bean id="transactionPointcut" class="org.springframework.aop.support.NameMatchMethodPointcut">
+            <property name="mappedName" value="sayH*"/>
+        </bean>
+
+        <bean id="transactionAdvisor" class="org.springframework.aop.support.DefaultPointcutAdvisor">
+            <property name="advice" ref="transactionAdvice"/>
+            <property name="pointcut" ref="transactionPointcut"/>
+        </bean>
+
+        <bean id="userService" class="org.springframework.aop.framework.ProxyFactoryBean">
+            <property name="target" ref="userServiceImpl"/>
+            <property name="interceptorNames">
+                <list>
+                    <value>transactionAdvisor</value>
+                </list>
+            </property>
+        </bean>
+    ```
