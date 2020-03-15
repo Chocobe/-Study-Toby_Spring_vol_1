@@ -369,3 +369,78 @@
             </property>
         </bean>
     ```
+
+
+---
+
+
+## 🐫 자동 프록시 생성기 : DefaultAdvisorAutoProxyCreator
+
+* **빈 후처리기** 를 이용하여 설정된 Advisor를 적용한 Proxy객체를 반환해 준다.
+
+* 주의할 점은, 반환해 주는 객체의 타입이 **타겟(Target)**의 **구현 인터페이스**라는 것이다.
+
+* xml설정은 다음과 같다.
+
+    ```xml
+        <bean id="transactionAdvice" class="MethodInterceptor를 구현한 클래스경로"></bean>
+
+        <bean id="transactionPointcut" class="NameMatchMethodPointcut을 상속한 클래스경로">
+            <property name="mappedName" value="메서드 패턴"/>
+            <!-- NameMatchMethodPointcut의 ClassFilter를 교체하여 클래스명 패턴도 정할 수 있다 -->
+        </bean>
+
+        <bean id="transactionAdvisor" class="org.springframework.aop.support.DefaultPointcutAdvisor">
+            <property name="advice" ref="transactionAdvice"/>
+            <property name="pointcut", ref="transactionPointcut"/>
+        </bean>
+
+        <!-- 프록시를 자동생성하여,  -->
+        <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"/>
+    ```
+
+* NameMatchMethodPointcut 클래스의 속성으로 ClassFilter객체가 클래스명을 필터링해준다.
+
+* ClassFilter는 기본적으로 모든 클래스가 true로 필터링이 off인 상태이다.
+
+* NameMatchMethodPointcut 클래스의 ClassFilter를 다음과 같이 바꿔주면, 클래스명을 필터링 할 수 있다.
+
+    ```java
+        // 클래스명, 메서드명 둘 다 필터링 가능한 Pointcut클래스 작성
+        public class NameMatchClassMethodPointcut extends NameMatchMethodPointcut {
+            public void setMappedClassName(String mappedClassName) {
+                this.setClassFilter(new SimpleClassFilter(mappedClassName));
+            }
+
+            // 클래스명 필터기능을 설정한 ClassFilter타입 클래스
+            static class SimpleClassFilter implements ClassFilter {
+                // 클래스명을 필터링할 네임패턴
+                private String mappedName;
+
+                public SimpleClassFilter(String mappedName) {
+                    this.mappedName = mappedName;
+                }
+
+                // 실제로 패턴비교를 수행하는 메서드를 @Override
+                @Override
+                public boolean matches(Class<?> clazz) {
+                    return PatternMatchUtils.simpleMatch(mappedName, clazz.getSimpleName());
+                }
+
+            }
+        }
+    ```
+
+
+---
+
+
+## 🐫 스프링 참고지식
+
+* PatternMatchUtils.simpleMatch(String name_1, String name_2)
+
+    * 와일드카드(*)를 지원하는 스프링의 비교 유틸 메서드다.
+
+* <bean parent="부모객체id">
+
+    * 부모객체 빈(Bean)의 모든 속성값을 그대로 가져온다. (상속받았기 때문에 가능하다.)

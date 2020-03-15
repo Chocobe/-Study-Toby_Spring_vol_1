@@ -5,7 +5,6 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.Matchers.any;
 
-import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -14,37 +13,26 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.PlatformTransactionManager;
 
 import springbook.user.dao.UserDao;
 import springbook.user.domain.Level;
 import springbook.user.domain.User;
-import springbook.user.service.TransactionHandler;
-import springbook.user.service.TxProxyFactoryBean;
 import springbook.user.service.UserService;
 import springbook.user.service.UserServiceImpl;
-import springbook.user.service.UserServiceTx;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations="/applicationContext.xml")
 public class UserServiceTest {
 	@Autowired private UserService userService;
-	@Autowired private UserServiceImpl userServiceImpl;
+	@Autowired private UserService testUserService;
 	@Autowired private UserDao userDao;
-	
-	@Autowired private PlatformTransactionManager transactionManager;
-	@Autowired private MailSender mailSender;
-	
-	@Autowired private ApplicationContext context;
 	
 	private List<User> users;
 	
@@ -63,7 +51,7 @@ public class UserServiceTest {
 	
 	@Test
 	public void bean() {
-		assertThat(userService, is(notNullValue()));
+//		assertThat(userService, is(notNullValue()));
 		assertThat(userDao, is(notNullValue()));
 	}
 	
@@ -166,14 +154,14 @@ public class UserServiceTest {
 	@Test
 	@DirtiesContext
 	public void upgradeAllOrNothing() throws Exception {
-		TestUserService testUserService = new TestUserService(users.get(3).getId());
-		testUserService.setUserDao(this.userDao);
-		testUserService.setMailSender(this.mailSender);
-		
-		ProxyFactoryBean txProxyFactoryBean = context.getBean("&userService", ProxyFactoryBean.class);
-		txProxyFactoryBean.setTarget(testUserService);
-		
-		UserService txUserService = (UserService)txProxyFactoryBean.getObject();
+//		TestUserServiceImpl testUserServiceImpl = new TestUserServiceImpl(users.get(3).getId());
+//		testUserService.setUserDao(this.userDao);
+//		testUserService.setMailSender(this.mailSender);
+//		
+//		ProxyFactoryBean txProxyFactoryBean = context.getBean("&userService", ProxyFactoryBean.class);
+//		txProxyFactoryBean.setTarget(testUserService);
+//		
+//		UserService txUserService = (UserService)txProxyFactoryBean.getObject();
 		
 		userDao.deleteAll();
 		
@@ -182,7 +170,7 @@ public class UserServiceTest {
 		}
 		
 		try {
-			txUserService.upgradeLevels();
+			this.testUserService.upgradeLevels();
 			fail("TestUserServiceException expected");
 			
 		} catch(TestUserServiceException e) { }
@@ -191,18 +179,18 @@ public class UserServiceTest {
 	}
 	
 	
-	static class TestUserService extends UserServiceImpl {
-		private String id;
-		
-		
-		private TestUserService(String id) {
-			this.id = id;
-		}
+	static class TestUserServiceImpl extends UserServiceImpl {
+		private String id = "madnite1";
 		
 		
 		@Override
 		protected void upgradeLevel(User user) {
-			if(user.getId().equals(this.id)) throw new TestUserServiceException();
+			System.out.println("<upgradeLevel> field : " + id + ", user.getId() : " + user.getId());
+			
+			if(user.getId().equals(this.id)) {
+				System.out.println("\t예외 발생!");
+				throw new TestUserServiceException();
+			}
 			super.upgradeLevel(user);
 		}
 	}
