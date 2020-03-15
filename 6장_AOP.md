@@ -258,6 +258,11 @@
 
 * 타겟정보는 프록시 팩토리 빈 생성 후, **setTarget()** 메서드로 설정한다.
 
+* 필요 라이브러리
+
+    * com.springsource.org.aopalliance-1.0.0.jar
+    
+    * org.springframework.aop-3.0.7.RELEASE.jar
 
 ---
 
