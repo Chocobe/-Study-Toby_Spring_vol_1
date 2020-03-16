@@ -495,3 +495,310 @@
 * <bean parent="부모객체id">
 
     * 부모객체 빈(Bean)의 모든 속성값을 그대로 가져온다. (상속받았기 때문에 가능하다.)
+
+
+---
+
+
+# 🐫 AOP란? (Aspect Oriented Programming)
+
+* 애플리케이션의 핵심기능에서 부가기능을 **분리**하여, **애스팩트** 라는 독특한 모듈로 만들어서 설계하고 개발하는 방법을 말한다.
+
+* AOP는 OOP에서 애스팩트를 분리함으로써, **핵심기능의 설계, 구현**이 객체지향적인 가치를 지킬 수 있도록 도와주는 것을 말한다.
+
+* 스프링의 AOP는 **Proxy 방식의 AOP**라고 할 수 있다.
+
+
+---
+
+
+# 🐫 AOP 용어
+
+1. 타겟(Target)
+
+    * 부가기능을 부여할 대상을 말한다.
+
+    * 타겟은 핵심기능일 수도 있고, 다른 부가기능이 될 수도 있다.
+
+1. 어드바이스(Advice)
+
+    * 부가기능을 담은 모듈
+
+1. 조인 포인트(Join point)
+
+    * 어드바이스가 적용될 수 있는 위치를 말한다.
+
+    * 스프링의 AOP는 Proxy방식이기 때문에 조인 포인트는 **메서드 실행 단계** 뿐이다.
+
+1. 포인트컷(Pointcut)
+
+    * 스프링의 조인 포인트가 **메서드 실행 단계** 뿐이기 떄문에, 포인트컷은 **메서드 선정 기능** 이라고 할 수 있다.
+
+1. 프록시(Proxy)
+
+    * 클라이언트와 타겟 사이에 투명하게 존재하면서 부가기능을 제공하는 오브젝트를 말한다.
+
+1. 어드바이저(Advisor)
+
+    * **포인트컷(Pointcut)** 과 **어드바이스(Advice)** 를 하나씩 가진 오브젝트이다.
+
+    * (어드바이저는 스프링의 AOP에서만 사용하는 용어다.)
+
+1. 애스팩트(Aspect)
+
+    * AOP의 기본모듈을 말한다.
+
+    * 한개 또는 그 이상의 포인트컷(Pointcut) 과 어드바이스(Advice)의 조합으로 만들어진다.
+
+    * 보통 애스팩트(Aspect)는 싱글톤 객체로 존재한다.
+
+    * 스프링의 어드바이저(Advisor) 하나는 가장 작은 애스팩트(Aspect)라고 볼 수 있다.
+
+
+---
+
+
+# 🐫 스프링의 AOP를 사용하기 위한 필요요소 4가지
+
+1. 자동 프록시 생성기
+
+    * **DefaultAdvisorAutoProxyCreator** 클래스를 **빈으로 등록**한다.
+
+    * DI 받지도, 주지도 않는 독립적인 객체이기 때문에, xml설정의 id속성이 **필요없다.**
+
+    * 빈으로 등록된 어드바이저(Advisor)에 **프록시(Proxy)** 를 자동으로 생성해 주는 기능을 한다.
+
+1. 어드바이스(Advisor)
+
+    * 부가기능을 구현한 클래스를 빈으로 등록한다.
+
+    * AOP를 사용하기 위해서 유일하게 직접 구현한 클래스다.
+
+1. 포인트컷(Pointcut)
+
+    * 스프링의 **AspectJExpressionPointcut** 클래스를 **빈으로 등록**한다.
+
+    * **expression** 프로퍼티에 **포인트컷 표현식**을 넣어주면 된다.
+
+1. 어드바이저(Advisor)
+
+    * 스프링의 **DefaultPointcutAdvisor** 클래스를 **빈으로 등록**한다.
+
+* 어드바이스(Advice)를 제외한 나머지 3가지는 xml에서 **빈(Bean)**으로 등록하여 사용하면 된다.
+
+
+---
+
+
+## 🐫 AOP 네임스페이스
+
+### 🐫 <aop:> - AOP설정을 위한 네임스페이스
+
+* xml에서 <bean> 태그가 아니라, AOP 네임스페이스를 이용하여 AOP전용 태그를 사용할 수 있다.
+
+* <beans> 설정
+
+    ```xml
+        <?xml version="1.0" encoding="UTF-8"?>
+        <beans xmlns="http://www.springframework.org/schema/beans"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns:aop="http://www.springframework.org/schema/aop"
+            xsi:schemaLocation="http://www.springframework.org/schema/beans
+                                http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+                                http://www.springframework.org/schema/aop
+                                http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
+        </beans>
+    ```
+
+* aop태그는 접두사로 **<aop:태그명>** 형식으로 사용할 수 있다.
+
+* 사용법_1 (Pointcut객체를 생성하는 방식)
+
+    ```xml
+        <?xml version="1.0" encoding="UTF-8"?>
+        <beans xmlns="http://www.springframework.org/schema/beans"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns:aop="http://www.springframework.org/schema/aop"
+            xsi:schemaLocation="http://www.springframework.org/schema/beans
+                                http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+                                http://www.springframework.org/schema/aop
+                                http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
+
+            <aop:config>
+                <aop:pointcut id="transactionPointcut" expression="execution(* *..*ServiceImpl.upgrade*(..))"/>
+                <aop:advisor advice-ref="transactionAdvice", pointcut-ref="transactionPointcut"/>
+            </aop:config>
+        </beans>
+    ```
+
+* 사용법_2 (Pointcut객체를 생성하지 않고, 포인트컷 표현식만 사용하는 방식)
+
+    ```xml
+        <?xml version="1.0" encoding="UTF-8"?>
+        <beans xmlns="http://www.springframework.org/schema/beans"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns:aop="http://www.springframework.org/schema/aop"
+            xsi:schemaLocation="http://www.springframework.org/schema/beans
+                                http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+                                http://www.springframework.org/schema/aop
+                                http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
+
+            <aop:config>
+                <aop:advisor advice-ref="transactionAdvice" pointcut="execution(* *..*ServiceImpl.upgrade*(..))"/>
+            </aop:config>
+        </beans>
+    ```
+
+* **<aop:config>** 태그 사용시, **자동 프록시 생성** 기능까지 해준다.
+
+* **<aop:config>** 태그는 필요에 따라, **AspectJAdvisorAutoProxyCreator** 를 빈(Bean)으로 등록해 준다.
+
+    * 그러므로, **DefaultAdvisorAutoProxyCreator** 객체를 빈(Bean)으로 등록하지 않아도 자동으로 프록시를 생성해 준다.
+
+
+### 🐫 <tx:> - 트랜잭션 설정을 위한 네임스페이스
+
+* 트랜잭션에는 설정을 위한 속성들이 있다.
+
+    1. **트랜잭션 전파(Transaction Propagation)**
+
+        * 트랜잭션의 경계에서 이미 진행중인 트랜잭션이 있을 때(또는 없을 때), 어떻게 동작할지를 설정한다.
+
+        1. **PROPAGATION_REQUIRED**
+
+            * (기본값) 진행중인 트랜잭션이 없으면 새로 시작, 이미 시작했다면 참여하는 방식이다.
+
+        1. **PROPAGATION_REQUIRES_NEW**
+
+            * 항상 새로운 트랜잭션을 시작한다.
+
+            * 주의할 사항은 Proxy객체가 **자기자신의 메서드**를 호출할 경우, 새로운(번복된) **Proxy기능이 적용되지 않는다.**
+
+             * 자기자신의 메서드를 호출할 때는, Proxy의 부가기능이 적용되지 않는다.
+
+            ```java
+                public class UserService {
+                    // 클라이언트가 updates()를 호출하면, Proxy가 적용되지만,
+                    public void updates() {
+                        // 자기자신의 메서드를 호출할 때는, Proxy가 적용되지 않는다.
+                        update();
+                        update();
+                    }
+
+                    public void update() { }
+                }
+            ```
+
+        1. **PROPAGATION_NOT_SUPPORTED**
+
+            * 트랜잭션 없이 동작하게 된다. 
+
+            * 특정 메서드만 트랜잭션을 적용하지 않아야 할 경우, 사용하면 유용하다.
+
+    1. **격리수준(Isolation Level)**
+
+        * 여러 트랜잭션을 동시에 진행시키면서도 문제가 발생하지 않도록 격리시키는 설정이다.
+
+    1. **제한시간 (Timeout)**
+
+        * 트랜잭션을 수행하는 제한시간을 설정한다.
+
+        * 기본값은 제한시간이 없다.
+
+    1. **읽기전용(ReadOnly)**
+
+        * 읽기전용으로 설정할 수 있다.
+
+        * 읽기 전용 트랜잭션에서 updateQuery 기능들을 사용할 경우, **TransientDataAccessResourceException**이 발생한다.
+
+
+* 트랜잭션 Advice를 만들때는 기존의 **MethodInterceptor**가 아닌 **TransactionInterceptor**를 사용하여 만들 수 있다.
+
+* MethodInterceptor는 인터페이스인 반면, TransactionInterceptor는 **클래스** 이기 때문에, 클래스 작성 없이 빈(Bean)으로 만들 수 있다.
+
+* 사용법_1 (``<bean>``태그를 사용한 **트랜잭션 Advice**)
+
+    ```xml
+        <bean id="transactionAdvice" class="org.springframework.transaction.interceptor.TransactionInterceptor">
+            <property name="transactionManager" ref="transactionManager"/>
+            <property name="transactionAttributes">
+                <props>
+                    <prop key="get*">PROPAGATION_REQUIRED, readOnly, timeout_30</prop>
+                    <prop key="upgrade*">PROPAGATION_REQUIRES_NEW, ISOLATION_SERIALIZABLE</prop>
+                    <prop key="*">PROPAGATION_REQUIRED</prop>
+                </props>
+            </property>
+        </bean>
+    ```
+
+* 사용법_2 (``<tx:>``태그를 사용한 **트랜잭션 Advice**)
+
+    * ``<beans>`` 설정
+
+    ```xml
+        <?xml version="1.0" encoding="UTF-8"?>
+        <beans xmlns="http://www.springframework.org/schema/beans"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns:aop="http://www.springframework.org/schema/aop"
+            xmlns:tx="http://www.springframework.org/schema/tx"
+            xsi:schemaLocation="http://www.springframework.org/schema/beans
+                                http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+                                http://www.springframework.org/schema/aop
+                                http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+                                http://www.springframework.org/schema/tx
+                                http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
+        </beans>
+    ```
+
+    ```xml
+        <?xml version="1.0" encoding="UTF-8"?>
+        <beans xmlns="http://www.springframework.org/schema/beans"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns:aop="http://www.springframework.org/schema/aop"
+            xmlns:tx="http://www.springframework.org/schema/tx"
+            xsi:schemaLocation="http://www.springframework.org/schema/beans
+                                http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+                                http://www.springframework.org/schema/aop
+                                http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+                                http://www.springframework.org/schema/tx
+                                http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
+
+            <!-- transaction-manager의 빈(Bean)이름이 transactionManager라면, 속성 생략가능 -->
+            <tx:advice id="transactionAdvice" transaction-manager="transactionManager">
+                <tx:method name="get*" propagation="REQUIRED" read-only="true" timeout="30"/>
+                <tx:method name="upgrade*" propagation="REQUIRES_NEW" isolation="SERIALIZABLE"/>
+                <tx:method name="*" propagation="REQUIRED"/>
+                <!-- tx:method의 필수 속성은 propagation 하나다. -->
+                <!-- 생략가능 속성을 생략시, 기본값으로 설정된다. -->
+            </tx:advice>
+        </beans>
+    ```
+
+
+---
+
+
+## 🐫 트랜잭션의 포인트컷과 트랜잭션 속성 전략
+
+* 포인트컷에서는 **타입패턴(패키지.클래스)** 또는 **빈(Bean) id패턴**으로만 지정한다.
+
+    ```xml
+        <aop:config>
+            <aop:pointcut id="pointcut" exepression="execution(* *..*Service.*(..))"/>
+            <aop:advisor advice-ref="advice" pointcut-ref="pointcut"/>
+        </aop:config>
+    ```
+
+* 메서드 조건은 트랜잭션 속성으로 설정한다.
+
+    ```xml
+        <tx:advice id="transactionAdvice" transaction-manager="transactionManager">
+            <tx:attributes>
+                <tx:method name="get*" propagation="REQUIRED"/>
+            </tx:attributes>
+        </tx:advice>
+    ```
+
+* SELECT쿼리는 조회용 쿼리기 때문에 **읽기전용**으로 설정하는게 좋다. (DB 성능향상)
+
+    * **읽기전용** 트랜잭션에서 **쓰기** 쿼리 사용시, **TransientDataAccessResourceException** 이 발생한다.

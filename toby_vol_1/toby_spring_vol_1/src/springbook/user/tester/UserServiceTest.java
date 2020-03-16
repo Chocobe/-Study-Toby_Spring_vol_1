@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.TransientDataAccessResourceException;
 import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
@@ -178,19 +179,33 @@ public class UserServiceTest {
 	}
 	
 	
+	@Test(expected=TransientDataAccessResourceException.class)
+	public void readOnlyTransactionAttribute() {
+		testUserService.getAll();
+	}
+	
+	
 	static class TestUserServiceImpl extends UserServiceImpl {
 		private String id = "madnite1";
 		
 		
 		@Override
 		protected void upgradeLevel(User user) {
-			System.out.println("<upgradeLevel> field : " + id + ", user.getId() : " + user.getId());
 			
 			if(user.getId().equals(this.id)) {
-				System.out.println("\t예외 발생!");
 				throw new TestUserServiceException();
 			}
 			super.upgradeLevel(user);
+		}
+		
+		
+		@Override
+		public List<User> getAll() {
+			for(User user : super.getAll()) {
+				super.update(user);
+			}
+			
+			return null;
 		}
 	}
 	
