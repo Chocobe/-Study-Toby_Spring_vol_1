@@ -152,7 +152,6 @@ public class UserServiceTest {
 	
 	
 	@Test
-	@DirtiesContext
 	public void upgradeAllOrNothing() throws Exception {
 //		TestUserServiceImpl testUserServiceImpl = new TestUserServiceImpl(users.get(3).getId());
 //		testUserService.setUserDao(this.userDao);

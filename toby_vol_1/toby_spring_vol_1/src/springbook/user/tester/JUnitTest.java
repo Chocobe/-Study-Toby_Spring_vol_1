@@ -48,6 +48,7 @@ public class JUnitTest {
 		
 		assertTrue(contextObject == null || contextObject == this.context);
 		contextObject = this.context;
+		
 	}
 	
 	

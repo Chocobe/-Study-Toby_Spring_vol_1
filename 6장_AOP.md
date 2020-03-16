@@ -435,6 +435,57 @@
 ---
 
 
+## 🐫 포인트컷 표현식
+
+* 표현식 언어를 사용하여 포인터컷 객체를 생성하는 방법이다.
+
+* NameMatchMethodPointcut 객체의 불편한 조건설정을 간단한 표현식으로 만드는 기술이다.
+
+* 표현식 포인트컷 객체는 **AspectJExpressionPointcut** 클래스로 생성한다.
+
+* 표현식은 **setExpression(표현식)** 으로 설정한다.
+
+* 사용법
+
+    ```java
+        Hello advice = new UpperCaseHello();
+    
+        AspectJExpressionPointcut pointcut = new AspectJExpressionPointcut();
+        pointcut.setExpression("execution(* *..*.*(..))");
+
+        DefaultPointcutAdvisor advisor = new DefaultPointcutAdvisor(pointcut, advice);
+    ```
+
+* 위의 코드를 xml설정파일에 빈(Bean)으로 등록하면, 더욱 간단한 코드로 작성할 수 있다.
+
+    ```xml
+        <bean id="userService" class="springbook.user.service.UserServiceImpl"/>
+
+        <bean id="transactionAdvice" class="springbook.user.service.TransactionAdvice">
+            <property name="transactionManager" ref="transactionManager"/>
+        </bean>
+
+        <!-- 표현식 포인트컷을 이용한 Pointcut 빈 생성 -->
+        <bean id="pointcut" class="org.springframework.aop.aspectj.AspectJExpressionPointcut">
+            <property name="exepression" value="execution(* *..*ServiceImpl.upgrade*(..))"/>
+        </bean>
+
+        <bean id="advisor" class="org.springframework.aop.support.DefaultPointcutAdvisor">
+            <property name="pointcut" ref="transactionPointcut"/>
+            <property name="advice" ref="transactionAdvice"/>
+        </bean>
+
+        <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"/>
+    ```
+
+* NameMatchMethodPointcut 객체 대신 **AspectJExpressionPointcut**객체를 사용하면 된다.
+
+* 포인트컷 표현식의 중요한 점은, 표현식의 클래스명이 객체명(id)가 아닌, 클래스 타입명으로 비교한다는 것이다.
+
+
+---
+
+
 ## 🐫 스프링 참고지식
 
 * PatternMatchUtils.simpleMatch(String name_1, String name_2)
