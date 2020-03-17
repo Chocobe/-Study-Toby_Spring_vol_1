@@ -802,3 +802,81 @@
 * SELECT쿼리는 조회용 쿼리기 때문에 **읽기전용**으로 설정하는게 좋다. (DB 성능향상)
 
     * **읽기전용** 트랜잭션에서 **쓰기** 쿼리 사용시, **TransientDataAccessResourceException** 이 발생한다.
+
+
+---
+
+
+## 🐫 @Transactional 애노테이션
+
+* 트랜잭션 적용을 위한 Proxy를 **@Transactional** 애노테이션으로 만들 수 있다.
+
+* xml에 설정한 <aop:advisor>와 <tx:advice>를 대체한다.
+
+* **@Transactional**을 사용할 경우, 다음 우선순위로 적용된다.
+
+    1. 대상 클래스 메서드의 @Transactional
+
+    1. 대상 클래스 @Transactional
+
+    1. 대상 클래스가 구현한 인터페이스 메서드의 @Transactional
+
+    1. 대상 클래스가 구현한 인터페이스의 @Transactional
+
+* 사용법
+
+    ```xml
+        <tx:annotation-driven/>
+    ```
+
+    ```java
+        @Transactional
+        public class myClass {
+            // hello_1() 메서드는 여기에 지정한 @Transactional(readOnly=true)가 적용된다.
+            @Transactional(readOnly=true)
+            public String hello_1() { }
+            
+            // hello_2(), hello_3()는 클래스의 @Transactional이 적용된다.
+            public String hello_2() { }
+            public String hello_3() { }     
+        }
+    ```
+
+
+---
+
+
+## 🐫 테스트 클래스/메서드 의 @Transactional
+
+* 테스트 클래스(@RunWIth(SpringJUnit4ClassRunner.class)) 에 @Transactional을 사용할 경우, 테스트용 트랜잭션을 사용한다.
+
+* @Test 메서드에 @Transactional을 사용하면, 해당 테스트 메서드에 테스트용 트랜잭션을 사용한다.
+
+* 테스트용 트랜잭션은 **rollback테스트**로 수행한다.
+
+* **rollback테스트**는 테스트 수행후, 해당 작업을 모두 **rollback**하기 때문에, DB에 테스트의 영향이 없도록 해준다.
+
+* 사용법
+
+    ```java
+        // 테스트 클래스의 모든 메서드에 적용
+    
+        @RunWith(SpringJUnit4ClassRunner.class)
+        @Transactional
+        public class MyTest {
+            public void myTest() {
+                
+            }
+        }
+    ```
+
+    ```java
+        // @Transactional이 지정된 메서드만 적용
+        
+        public class MyTest {
+            @Transactional
+            public void myTest() {
+                
+            }
+        }
+    ```

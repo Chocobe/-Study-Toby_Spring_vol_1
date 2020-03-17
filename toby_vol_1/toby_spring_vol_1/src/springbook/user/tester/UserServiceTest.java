@@ -19,8 +19,13 @@ import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import springbook.user.dao.UserDao;
 import springbook.user.domain.Level;
@@ -34,6 +39,7 @@ public class UserServiceTest {
 	@Autowired private UserService userService;
 	@Autowired private UserService testUserService;
 	@Autowired private UserDao userDao;
+	@Autowired private PlatformTransactionManager transactionManager;
 	
 	private List<User> users;
 	
@@ -52,8 +58,10 @@ public class UserServiceTest {
 	
 	@Test
 	public void bean() {
-//		assertThat(userService, is(notNullValue()));
+		assertThat(userService, is(notNullValue()));
+		assertThat(testUserService, is(notNullValue()));
 		assertThat(userDao, is(notNullValue()));
+		assertThat(transactionManager, is(notNullValue()));
 	}
 	
 	
@@ -271,5 +279,17 @@ public class UserServiceTest {
 		@Override public User get(String id) { throw new UnsupportedOperationException(); }
 		@Override public void deleteAll() { throw new UnsupportedOperationException(); } 
 		@Override public int getCount() { throw new UnsupportedOperationException(); }
+	}
+	
+	
+	@Test
+	@Transactional
+	@Rollback(false)
+	public void transactionSync() {
+		userDao.deleteAll();
+		
+		userService.add(users.get(0));
+		userService.add(users.get(1));
+		assertThat(userDao.getCount(), is(2));
 	}
 }

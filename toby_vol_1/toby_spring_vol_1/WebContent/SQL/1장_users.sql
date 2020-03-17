@@ -6,9 +6,12 @@ CREATE TABLE users(
 
 DESC users;
 
-SELECT * FROM users;
+SELECT * FROM users ORDER BY email asc;
 
 DELETE FROM users;
+
+
+ALTER TABLE users ADD COLUMN email VARCHAR(50) NOT NULL;
 
 
 CREATE USER toby@localhost IDENTIFIED BY '2222';
@@ -20,19 +23,5 @@ GRANT ALL PRIVILEGES ON testdb.* TO toby@localhost;
 
 SHOW DATABASES;
 
-
-
-CREATE TABLE myBoard(
-	idx			INT AUTO_INCREMENT PRIMARY KEY,
-	writerID		VARCHAR(30) NOT NULL,
-	title			VARCHAR(100) NOT NULL,
-	content		VARCHAR(500) NOT NULL,
-	writeDate	TIMESTAMP DEFAULT CURRENT_TIMESTAMP(),
-	watch			INT DEFAULT 0
-);
-
-DESC myBoard;
-
-SELECT * FROM myBoard;
-
-DELETE FROM myBoard;
+ALTER TABLE users DROP COLUMN recommand;
+ALTER TABLE users ADD COLUMN recommend INT;
