@@ -11,10 +11,25 @@ import org.springframework.jdbc.core.RowMapper;
 
 import springbook.user.domain.Level;
 import springbook.user.domain.User;
+import springbook.user.sqlservice.SqlService;
 
 
 public class UserDaoJdbc implements UserDao {
 	private JdbcTemplate jdbcTemplate;
+	
+	private SqlService sqlService;
+
+	
+	public void setDataSource(DataSource dataSource) {
+		this.jdbcTemplate = new JdbcTemplate(dataSource);
+	}
+	
+	
+	public void setSqlService(SqlService sqlService) {
+		this.sqlService = sqlService;
+	}
+	
+	
 	private RowMapper<User> userMapper = new RowMapper<User>() {
 		@Override
 		public User mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -32,15 +47,10 @@ public class UserDaoJdbc implements UserDao {
 	};
 	
 	
-	public void setDataSource(DataSource dataSource) {
-		this.jdbcTemplate = new JdbcTemplate(dataSource);
-	}
-	
-	
 // add
 	@Override
 	public void add(User user) {
-		jdbcTemplate.update("INSERT INTO users(id, name, password, email, level, login, recommend) VALUES(?, ?, ?, ?, ?, ?, ?)", 
+		jdbcTemplate.update(this.sqlService.getSql("userAdd"), 
 							user.getId(), 
 							user.getName(), 
 							user.getPassword(),
@@ -54,7 +64,7 @@ public class UserDaoJdbc implements UserDao {
 // get
 	@Override
 	public User get(String id) {
-		return jdbcTemplate.queryForObject("SELECT * FROM users WHERE id=?", 
+		return jdbcTemplate.queryForObject(this.sqlService.getSql("userGet"), 
 										   new Object[] {id}, 
 										   userMapper);
 	}
@@ -63,7 +73,7 @@ public class UserDaoJdbc implements UserDao {
 // getAll
 	@Override
 	public List<User> getAll() {
-		return this.jdbcTemplate.query("SELECT * FROM users", 
+		return this.jdbcTemplate.query(this.sqlService.getSql("userGetAll"), 
 									   userMapper);
 	}
 	
@@ -71,21 +81,21 @@ public class UserDaoJdbc implements UserDao {
 // DELETE ALL
 	@Override
 	public void deleteAll() {
-		this.jdbcTemplate.update("DELETE FROM users");
+		this.jdbcTemplate.update(this.sqlService.getSql("userDeleteAll"));
 	}
 	
 	
 // COUNT(*)
 	@Override
 	public int getCount() {
-		return jdbcTemplate.queryForInt("SELECT COUNT(*) FROM users");
+		return jdbcTemplate.queryForInt(this.sqlService.getSql("userGetCount"));
 	}
 
 
 // update
 	@Override
 	public void update(User user) {
-		jdbcTemplate.update("UPDATE users SET name=?, password=?, email=?, level=?, login=?, recommend=? WHERE id=?", 
+		jdbcTemplate.update(this.sqlService.getSql("userUpdate"),
 							user.getName(), user.getPassword(), user.getEmail(), user.getLevel().intValue(), user.getLogin(), user.getRecommend(), user.getId());
 	}
 }
