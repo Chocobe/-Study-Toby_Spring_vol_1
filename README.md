@@ -12,10 +12,9 @@
 
 > ### 6장. [AOP](https://github.com/Chocobe/-Study-Toby_Spring_vol_1/blob/master/6%EC%9E%A5_AOP.md)
 
-> ### 참고 : [Maven의존성]()
+> ### 참고 : [Maven의존성](https://github.com/Chocobe/-Study-Toby_Spring_vol_1/blob/master/Maven%EC%9D%98%EC%A1%B4%EC%84%B1.md)
 
 ---
-
 
 ## 단축키
 
