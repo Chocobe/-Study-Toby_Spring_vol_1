@@ -9,18 +9,18 @@
 ## 🐫 JUnit 기본설정
 
     ```xml
-        <dependency>
-		    <groupId>junit</groupId>
-		    <artifactId>junit</artifactId>
-		    <version>4.8.1</version>
-		    <scope>test</scope>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8.1</version>
+			<scope>test</scope>
 		</dependency>
-		
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
-            <version>${org.springframework-version}</version>
-        </dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>${org.springframework-version}</version>
+		</dependency>
     ```
 
 * **spring-test** 의 버전은 ``spring-context``의 버전과 일치해야만 한다. (spring-context의 버전 : ${org.springframework-version})
@@ -30,7 +30,7 @@
 ## 🐫 Jackson - AJAX를 통한 JSON 컨버터
 
     ```xml
-        <dependency>
+		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-mapper-asl</artifactId>
 			<version>1.9.13</version>
@@ -42,7 +42,7 @@
 ## 🐫 commons-beanutils - JSP에서 Servlet으로 전송한 데이터를 Java객체로 바인딩 해준다.
 
     ```xml
-        <dependency>
+		<dependency>
 			<groupId>commons-beanutils</groupId>
 			<artifactId>commons-beanutils</artifactId>
 			<version>1.8.0</version>
@@ -78,7 +78,7 @@
 ## 🐫 cglib(Code Generator library) - 런타임 시점에 동적으로 Java class를 Proxy로 만들어 준다.
 
     ```xml
-        <dependency>
+		<dependency>
 			<groupId>cglib</groupId>
 			<artifactId>cglib-nodep</artifactId>
 			<version>2.2</version>
@@ -97,7 +97,7 @@
 			<artifactId>mybatis</artifactId>
 			<version>3.1.0</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.mybatis</groupId>
 			<artifactId>mybatis-spring</artifactId>
@@ -112,57 +112,57 @@
 # 🐫 전체 <dependency>
 
     ```xml
-        <!-- JUnit생략(필요시 추가할 것) -->
+		<!-- JUnit생략(필요시 추가할 것) -->
 
-        <!-- spring-test -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
-            <version>${org.springframework-version}</version>
-        </dependency>
+		<!-- spring-test -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>${org.springframework-version}</version>
+		</dependency>
 
-        <!-- jackson -->
-        <dependency>
+		<!-- jackson -->
+		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
 			<artifactId>jackson-mapper-asl</artifactId>
 			<version>1.9.13</version>
 		</dependency>
 
-        <!-- commons-beanutils -->
-        <dependency>
+		<!-- commons-beanutils -->
+		<dependency>
 			<groupId>commons-beanutils</groupId>
 			<artifactId>commons-beanutils</artifactId>
 			<version>1.8.0</version>
 		</dependency>
 
-        <!-- MySQL -->
-        <dependency>
+		<!-- MySQL -->
+		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<version>5.1.48</version>
 		</dependency>
 
-        <!-- commons-dbcp -->
-        <dependency>
+		<!-- commons-dbcp -->
+		<dependency>
 			<groupId>commons-dbcp</groupId>
 			<artifactId>commons-dbcp</artifactId>
 			<version>1.2.2</version>
 		</dependency>
 
-        <!-- cglib -->
-        <dependency>
+		<!-- cglib -->
+		<dependency>
 			<groupId>cglib</groupId>
 			<artifactId>cglib-nodep</artifactId>
 			<version>2.2</version>
 		</dependency>
 
-        <!-- mybatis -->
+		<!-- mybatis -->
 		<dependency>
 			<groupId>org.mybatis</groupId>
 			<artifactId>mybatis</artifactId>
 			<version>3.1.0</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.mybatis</groupId>
 			<artifactId>mybatis-spring</artifactId>
