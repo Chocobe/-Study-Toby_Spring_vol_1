@@ -109,6 +109,30 @@
 
 ---
 
+# 🐫 titles - 화면 레이아웃 프레임워크
+
+```xml
+<dependency>
+	<groupId>org.apache.tiles</groupId>
+	<artifactId>tiles-core</artifactId>
+	<version>2.2.2</version>
+</dependency>
+
+<dependency>
+	<groupId>org.apache.tiles</groupId>
+	<artifactId>tiles-jsp</artifactId>
+	<version>2.2.2</version>
+</dependency>
+
+<dependency>
+	<groupId>org.apache.tiles</groupId>
+	<artifactId>tiles-servlet</artifactId>
+	<version>2.2.2</version>
+</dependency>
+```
+
+---
+
 # 🐫 전체 <dependency>
 
 ```xml
@@ -167,5 +191,24 @@
 	<groupId>org.mybatis</groupId>
 	<artifactId>mybatis-spring</artifactId>
 	<version>1.1.0</version>
+</dependency>
+
+<!-- tiles -->
+<dependency>
+	<groupId>org.apache.tiles</groupId>
+	<artifactId>tiles-core</artifactId>
+	<version>2.2.2</version>
+</dependency>
+
+<dependency>
+	<groupId>org.apache.tiles</groupId>
+	<artifactId>tiles-jsp</artifactId>
+	<version>2.2.2</version>
+</dependency>
+
+<dependency>
+	<groupId>org.apache.tiles</groupId>
+	<artifactId>tiles-servlet</artifactId>
+	<version>2.2.2</version>
 </dependency>
 ```
